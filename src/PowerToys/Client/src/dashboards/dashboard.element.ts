@@ -9,6 +9,7 @@ import type { UmbExtensionElementInitializer } from "@umbraco-cms/backoffice/ext
 import type { ManifestPowerToy } from "../power-toy/power-toy.extension.js";
 import { UmbPowerToyContext } from "../power-toy/power-toy.context.js";
 import "../power-toy/power-toy-card.element.js";
+import "../power-toy/power-toy-default-body.element.js";
 
 @customElement("power-toys-dashboard")
 export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
@@ -26,7 +27,10 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
   render() {
     return html`
       <div id="power-toys">
-        <umb-extension-slot type="powerToy" .renderMethod=${this.#renderPowerToy}>
+        <umb-extension-slot
+          type="powerToy"
+          default-element="power-toys-default-body"
+          .renderMethod=${this.#renderPowerToy}>
           <uui-box>
             <p>No Power Toys have been registered yet.</p>
           </uui-box>
