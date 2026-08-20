@@ -10,9 +10,13 @@ import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
   render() {
     return html`
-      <uui-box headline="Power Toys">
-        <p>No tools have been added yet.</p>
-      </uui-box>
+      <div id="power-toys">
+        <umb-extension-slot type="powerToy">
+          <uui-box>
+            <p>No Power Toys have been registered yet.</p>
+          </uui-box>
+        </umb-extension-slot>
+      </div>
     `;
   }
 
@@ -21,6 +25,12 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
       :host {
         display: block;
         padding: var(--uui-size-layout-1);
+      }
+
+      #power-toys {
+        display: grid;
+        gap: var(--uui-size-layout-1);
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       }
     `,
   ];
