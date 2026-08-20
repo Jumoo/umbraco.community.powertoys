@@ -4,9 +4,9 @@
     {
       "name": "PowerToys.TestSite",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/PowerToys.TestSite/PowerToys.TestSite.csproj", "--urls", "https://localhost:44377"],
-      "port": 44377,
-      "url": "https://localhost:44377"
+      "runtimeArgs": ["run", "--project", "src/PowerToys.TestSite/PowerToys.TestSite.csproj", "--urls", "https://localhost:44390"],
+      "port": 44390,
+      "url": "https://localhost:44390"
     }
   ]
 }

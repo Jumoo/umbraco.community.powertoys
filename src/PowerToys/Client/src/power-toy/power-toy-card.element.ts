@@ -1,0 +1,90 @@
+import {
+  LitElement,
+  css,
+  html,
+  customElement,
+  property,
+  state,
+} from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
+import type { ManifestPowerToy } from "./power-toy.extension.js";
+import type { UmbPowerToyElement } from "./power-toy-element.interface.js";
+import { isPowerToyEnabled, setPowerToyEnabled } from "./power-toy-enabled.store.js";
+
+// The standard wrapper every power toy is shown in on the dashboard: an icon + name header,
+// an enable/disable toggle in the top-right, and a body the power toy fully controls.
+@customElement("power-toys-card")
+export class PowerToysCardElement extends UmbElementMixin(LitElement) {
+  @property({ attribute: false })
+  manifest?: ManifestPowerToy;
+
+  @state()
+  private _enabled = true;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._enabled = isPowerToyEnabled(this.manifest?.alias);
+  }
+
+  updated() {
+    this.#applyEnabled();
+  }
+
+  #onToggle = (e: Event) => {
+    this._enabled = (e.target as HTMLInputElement).checked;
+    setPowerToyEnabled(this.manifest?.alias, this._enabled);
+  };
+
+  #onSlotChange = () => this.#applyEnabled();
+
+  #applyEnabled() {
+    this.renderRoot
+      .querySelector("slot")
+      ?.assignedElements()
+      .forEach((el) => ((el as UmbPowerToyElement).enabled = this._enabled));
+  }
+
+  render() {
+    return html`
+      <uui-box>
+        <div slot="headline">
+          <uui-icon name=${this.manifest?.meta.icon ?? "icon-plugin"}></uui-icon>
+          ${this.manifest?.meta.label}
+        </div>
+        <uui-toggle
+          slot="header-actions"
+          label="Enable this power toy"
+          label-position="left"
+          .checked=${this._enabled}
+          @change=${this.#onToggle}>
+        </uui-toggle>
+        <div id="body" class=${this._enabled ? "" : "disabled"}>
+          <slot @slotchange=${this.#onSlotChange}></slot>
+        </div>
+      </uui-box>
+    `;
+  }
+
+  static styles = [
+    css`
+      uui-box {
+        height: 100%;
+      }
+
+      /* Disabled power toys stay visible - just visibly greyed out - rather than
+         disappearing, so people can still see what the power toy is. */
+      #body.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    `,
+  ];
+}
+
+export default PowerToysCardElement;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "power-toys-card": PowerToysCardElement;
+  }
+}
