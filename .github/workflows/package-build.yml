@@ -1,0 +1,73 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      fullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3
+        with:
+          versionSpec: "5.x"
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3
+
+  package-up:
+    needs: version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/PowerToys/Client/package-lock.json
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: Build client
+        working-directory: src/PowerToys/Client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Restore
+        run: dotnet restore src/PowerToys/PowerToys.csproj --locked-mode
+
+      - name: Build
+        run: >
+          dotnet build src/PowerToys/PowerToys.csproj -c Release --no-restore
+          -p:Version=${{ needs.version.outputs.fullSemVer }}
+          -p:ContinuousIntegrationBuild=true
+
+      - name: Pack
+        run: >
+          dotnet pack src/PowerToys/PowerToys.csproj -c Release --no-build
+          -p:Version=${{ needs.version.outputs.fullSemVer }}
+          -o out
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-build-output
+          path: out/*.nupkg

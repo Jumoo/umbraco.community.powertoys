@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/jumoo/umbraco.community.powertoys/security/policy
+    about: Please do not report security vulnerabilities as a public issue — see SECURITY.md.

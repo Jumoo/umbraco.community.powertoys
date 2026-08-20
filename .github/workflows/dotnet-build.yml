@@ -1,10 +1,10 @@
-name: Build
+name: PR Project Build
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "**.md"
 
 jobs:
   build:
@@ -14,11 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -26,11 +21,17 @@ jobs:
           cache: npm
           cache-dependency-path: src/PowerToys/Client/package-lock.json
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+
       - name: Build client
         working-directory: src/PowerToys/Client
         run: |
           npm ci
           npm run build
 
-      - name: Build solution
-        run: dotnet build src/PowerToys.slnx -c Release
+      - name: Restore
+        run: dotnet restore src/PowerToys.slnx --locked-mode
+
+      - name: Build
+        run: dotnet build src/PowerToys.slnx -c Release --no-restore -p:ContinuousIntegrationBuild=true

@@ -1,27 +1,96 @@
 name: Release Package
 
-# This action will start when a correctly formatted tag is pushed (e.g. 0.1.0)
-
+# Triggered by pushing a tag like "v1.2.3" on main.
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+      - "v*"
+
+env:
+  out_folder: out/
+  nuget_source: https://api.nuget.org/v3/index.json
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag '$tag' is not a valid version tag (expected v<semver>)." >&2
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Tag '$tag' does not point at a commit on main." >&2
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_ENV"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/PowerToys/Client/package-lock.json
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
+
+      - name: Build client
+        working-directory: src/PowerToys/Client
+        # wwwroot/App_Plugins is gitignored and generated, so without this the package
+        # ships with no backoffice assets. It has to run before pack.
+        run: |
+          npm ci
+          npm run build
+
+      - name: Restore
+        run: dotnet restore src/PowerToys/PowerToys.csproj --locked-mode
+
+      - name: Build
+        run: >
+          dotnet build src/PowerToys/PowerToys.csproj -c Release --no-restore
+          -p:Version=${{ env.version }}
+          -p:ContinuousIntegrationBuild=true
+
+      - name: Pack
+        run: >
+          dotnet pack src/PowerToys/PowerToys.csproj -c Release --no-build
+          -p:Version=${{ env.version }}
+          -o ${{ env.out_folder }}
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
         with:
-          dotnet-version: 10.0.x
+          name: nuget-release-output
+          path: ${{ env.out_folder }}*.nupkg
 
-      - name: Build & Pack
-        run: dotnet pack src/PowerToys/PowerToys.csproj -c Release /p:Version=${{github.ref_name}}
+      - name: nuget login
+        id: nuget_login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER || 'Jumoo' }}
 
-      - name: Push to NuGet
-        run: dotnet nuget push **/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+      - name: push to nuget
+        env:
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        run: >
+          dotnet nuget push "${{ env.out_folder }}*.nupkg"
+          --api-key "$NUGET_API_KEY"
+          --source ${{ env.nuget_source }}
+          --skip-duplicate
