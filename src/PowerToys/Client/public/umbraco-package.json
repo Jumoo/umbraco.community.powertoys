@@ -1,0 +1,14 @@
+{
+  "id": "PowerToys",
+  "name": "PowerToys",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "Power Toys Bundle",
+      "alias": "PowerToys.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/PowerToys/power-toys.js"
+    }
+  ]
+}
