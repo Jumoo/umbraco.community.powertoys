@@ -9,7 +9,7 @@ import {
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { ManifestPowerToy } from "./power-toy.extension.js";
 import type { UmbPowerToyElement } from "./power-toy-element.interface.js";
-import { isPowerToyEnabled, setPowerToyEnabled } from "./power-toy-enabled.store.js";
+import { UMB_POWER_TOY_CONTEXT, type UmbPowerToyContext } from "./power-toy.context.js";
 
 // The standard wrapper every power toy is shown in on the dashboard: an icon + name header,
 // an enable/disable toggle in the top-right, and a body the power toy fully controls.
@@ -21,9 +21,19 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
   @state()
   private _enabled = true;
 
-  connectedCallback() {
-    super.connectedCallback();
-    this._enabled = isPowerToyEnabled(this.manifest?.alias);
+  #powerToyContext?: UmbPowerToyContext;
+
+  constructor() {
+    super();
+    this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
+      this.#powerToyContext = context;
+      this.#loadEnabled();
+    });
+  }
+
+  async #loadEnabled() {
+    if (!this.manifest?.alias || !this.#powerToyContext) return;
+    this._enabled = await this.#powerToyContext.isEnabled(this.manifest.alias);
   }
 
   updated() {
@@ -32,7 +42,9 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
 
   #onToggle = (e: Event) => {
     this._enabled = (e.target as HTMLInputElement).checked;
-    setPowerToyEnabled(this.manifest?.alias, this._enabled);
+    if (this.manifest?.alias) {
+      this.#powerToyContext?.setEnabled(this.manifest.alias, this._enabled);
+    }
   };
 
   #onSlotChange = () => this.#applyEnabled();
