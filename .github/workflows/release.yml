@@ -1,6 +1,6 @@
 name: Release Package
 
-# Triggered by pushing a tag like "v1.2.3" on main.
+# Triggered by pushing a tag like "v1.2.3" on v17/main.
 on:
   push:
     tags:
@@ -34,8 +34,8 @@ jobs:
             exit 1
           fi
 
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
-            echo "Tag '$tag' does not point at a commit on main." >&2
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/v17/main; then
+            echo "Tag '$tag' does not point at a commit on v17/main." >&2
             exit 1
           fi
 

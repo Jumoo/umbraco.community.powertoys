@@ -7,7 +7,7 @@ current line, and to the previous one where the issue is serious and the fix is 
 
 | Version | Branch | Supported |
 | --- | --- | --- |
-| 0.x (Umbraco 17) | `main` | Yes |
+| 0.x (Umbraco 17) | `v17/main` | Yes |
 
 ## Reporting a vulnerability
 

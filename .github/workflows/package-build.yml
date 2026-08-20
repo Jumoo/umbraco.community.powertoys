@@ -2,7 +2,7 @@ name: Build and Package
 
 on:
   push:
-    branches: [main]
+    branches: ["v17/main"]
     paths-ignore:
       - "**.md"
   workflow_dispatch:

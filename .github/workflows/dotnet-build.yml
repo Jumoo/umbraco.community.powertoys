@@ -2,7 +2,7 @@ name: PR Project Build
 
 on:
   pull_request:
-    branches: [main]
+    branches: ["v17/main"]
     paths-ignore:
       - "**.md"
 
