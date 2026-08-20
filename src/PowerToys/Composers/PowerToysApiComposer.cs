@@ -10,6 +10,8 @@ using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Api.Management.OpenApi;
 using Umbraco.Cms.Api.Common.OpenApi;
 using Umbraco.Cms.Infrastructure.Manifest;
+using Umbraco.Extensions;
+using PowerToys.Services;
 
 namespace PowerToys.Composers
 {
@@ -18,6 +20,8 @@ namespace PowerToys.Composers
         public void Compose(IUmbracoBuilder builder)
         {
             builder.Services.AddSingleton<IPackageManifestReader, PowerToysPackageManifestReader>();
+
+            builder.Services.AddUnique<IPowerToyService, PowerToyService>();
 
             builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
 

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { PingData, PingErrors, PingResponses, WhatsMyNameData, WhatsMyNameErrors, WhatsMyNameResponses, WhatsTheTimeMrWolfData, WhatsTheTimeMrWolfErrors, WhatsTheTimeMrWolfResponses, WhoAmIData, WhoAmIErrors, WhoAmIResponses } from './types.gen';
+import type { GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, PingData, PingErrors, PingResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -19,6 +19,66 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 export class PowerToysService {
+    public static getEnabled<ThrowOnError extends boolean = false>(options: Options<GetEnabledData, ThrowOnError>) {
+        return (options.client ?? client).get<GetEnabledResponses, GetEnabledErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/enabled',
+            ...options
+        });
+    }
+    
+    public static setEnabled<ThrowOnError extends boolean = false>(options: Options<SetEnabledData, ThrowOnError>) {
+        return (options.client ?? client).put<SetEnabledResponses, SetEnabledErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/enabled',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static getSettings<ThrowOnError extends boolean = false>(options: Options<GetSettingsData, ThrowOnError>) {
+        return (options.client ?? client).get<GetSettingsResponses, GetSettingsErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/settings',
+            ...options
+        });
+    }
+    
+    public static saveSettings<ThrowOnError extends boolean = false>(options: Options<SaveSettingsData, ThrowOnError>) {
+        return (options.client ?? client).put<SaveSettingsResponses, SaveSettingsErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/settings',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
     public static ping<ThrowOnError extends boolean = false>(options?: Options<PingData, ThrowOnError>) {
         return (options?.client ?? client).get<PingResponses, PingErrors, ThrowOnError>({
             security: [
@@ -28,45 +88,6 @@ export class PowerToysService {
                 }
             ],
             url: '/umbraco/powertoys/api/v1/ping',
-            ...options
-        });
-    }
-    
-    public static whatsMyName<ThrowOnError extends boolean = false>(options?: Options<WhatsMyNameData, ThrowOnError>) {
-        return (options?.client ?? client).get<WhatsMyNameResponses, WhatsMyNameErrors, ThrowOnError>({
-            security: [
-                {
-                    scheme: 'bearer',
-                    type: 'http'
-                }
-            ],
-            url: '/umbraco/powertoys/api/v1/whatsMyName',
-            ...options
-        });
-    }
-    
-    public static whatsTheTimeMrWolf<ThrowOnError extends boolean = false>(options?: Options<WhatsTheTimeMrWolfData, ThrowOnError>) {
-        return (options?.client ?? client).get<WhatsTheTimeMrWolfResponses, WhatsTheTimeMrWolfErrors, ThrowOnError>({
-            security: [
-                {
-                    scheme: 'bearer',
-                    type: 'http'
-                }
-            ],
-            url: '/umbraco/powertoys/api/v1/whatsTheTimeMrWolf',
-            ...options
-        });
-    }
-    
-    public static whoAmI<ThrowOnError extends boolean = false>(options?: Options<WhoAmIData, ThrowOnError>) {
-        return (options?.client ?? client).get<WhoAmIResponses, WhoAmIErrors, ThrowOnError>({
-            security: [
-                {
-                    scheme: 'bearer',
-                    type: 'http'
-                }
-            ],
-            url: '/umbraco/powertoys/api/v1/whoAmI',
             ...options
         });
     }

@@ -7,10 +7,18 @@ import {
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbExtensionElementInitializer } from "@umbraco-cms/backoffice/extension-api";
 import type { ManifestPowerToy } from "../power-toy/power-toy.extension.js";
+import { UmbPowerToyContext } from "../power-toy/power-toy.context.js";
 import "../power-toy/power-toy-card.element.js";
 
 @customElement("power-toys-dashboard")
 export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
+  constructor() {
+    super();
+    // Provided once here, above every power-toy card, so any card or power toy
+    // can consume it without each having to talk to the API directly.
+    new UmbPowerToyContext(this);
+  }
+
   #renderPowerToy = (ext: UmbExtensionElementInitializer) => html`
     <power-toys-card .manifest=${ext.manifest as ManifestPowerToy}>${ext.component}</power-toys-card>
   `;
