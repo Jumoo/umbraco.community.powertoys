@@ -1,3 +1,4 @@
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Services;
 
 namespace PowerToys.Services
@@ -9,26 +10,34 @@ namespace PowerToys.Services
     public class PowerToyService : IPowerToyService
     {
         private readonly IKeyValueService _keyValueService;
+        private readonly IRuntimeState _runtimeState;
 
-        public PowerToyService(IKeyValueService keyValueService)
+        public PowerToyService(IKeyValueService keyValueService, IRuntimeState runtimeState)
         {
             _keyValueService = keyValueService;
+            _runtimeState = runtimeState;
         }
 
         public bool IsEnabled(string alias)
-            => _keyValueService.GetValue(EnabledKey(alias)) != "false";
+            => IsRunning && _keyValueService.GetValue(EnabledKey(alias)) != "false";
 
         public void SetEnabled(string alias, bool enabled)
             => _keyValueService.SetValue(EnabledKey(alias), enabled ? "true" : "false");
 
         public string? GetSettings(string alias)
-            => _keyValueService.GetValue(SettingsKey(alias));
+            => IsRunning ? _keyValueService.GetValue(SettingsKey(alias)) : null;
 
         public void SaveSettings(string alias, string json)
             => _keyValueService.SetValue(SettingsKey(alias), json);
 
         public IReadOnlyDictionary<string, string?> GetBackup()
             => _keyValueService.FindByKeyPrefix(KeyPrefix) ?? new Dictionary<string, string?>();
+
+        /// <summary>
+        ///     Whether the site has finished booting into normal operation - the database isn't
+        ///     available to read from before then (e.g. on a brand new, unconfigured site).
+        /// </summary>
+        private bool IsRunning => _runtimeState.Level == RuntimeLevel.Run;
 
         public void RestoreBackup(IReadOnlyDictionary<string, string?> values)
         {
