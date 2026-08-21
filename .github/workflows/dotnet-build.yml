@@ -31,7 +31,7 @@ jobs:
           npm run build
 
       - name: Restore
-        run: dotnet restore src/PowerToys.slnx --locked-mode
+        run: dotnet restore src/PowerToys/PowerToys.csproj --locked-mode
 
       - name: Build
-        run: dotnet build src/PowerToys.slnx -c Release --no-restore -p:ContinuousIntegrationBuild=true
+        run: dotnet build src/PowerToys/PowerToys.csproj -c Release --no-restore -p:ContinuousIntegrationBuild=true

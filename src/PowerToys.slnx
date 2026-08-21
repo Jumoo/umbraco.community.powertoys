@@ -4,6 +4,7 @@
     <File Path="../.github/README.md" />
     <File Path="../docs/README_nuget.md" />
     <File Path="../umbraco-marketplace.json" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="PowerToys.TestSite/PowerToys.TestSite.csproj" />
   <Project Path="PowerToys/PowerToys.csproj" />
