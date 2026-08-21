@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "tsc && vite build --watch",
     "build": "tsc && vite build",
-    "generate-client": "node scripts/generate-openapi.js https://localhost:5000/umbraco/swagger/powertoys/swagger.json"
+    "generate-client": "node scripts/generate-openapi.js https://localhost:44377/umbraco/swagger/powertoys/swagger.json"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.85.2",

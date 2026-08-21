@@ -15,5 +15,5 @@ import { createClientConfig } from '../hey-api';
 export type CreateClientConfig<T extends ClientOptions = ClientOptions2> = (override?: Config<ClientOptions & T>) => Config<Required<ClientOptions> & T>;
 
 export const client = createClient(createClientConfig(createConfig<ClientOptions2>({
-    baseUrl: 'https://localhost:44390'
+    baseUrl: 'https://localhost:44377'
 })));
