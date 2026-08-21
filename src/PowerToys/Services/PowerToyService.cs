@@ -19,7 +19,7 @@ namespace PowerToys.Services
         }
 
         public bool IsEnabled(string alias)
-            => IsRunning && _keyValueService.GetValue(EnabledKey(alias)) != "false";
+            => IsRunning && _keyValueService.GetValue(EnabledKey(alias)) == "true";
 
         public void SetEnabled(string alias, bool enabled)
             => _keyValueService.SetValue(EnabledKey(alias), enabled ? "true" : "false");
