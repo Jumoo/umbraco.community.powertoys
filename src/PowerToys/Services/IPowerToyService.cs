@@ -19,5 +19,15 @@ namespace PowerToys.Services
         ///     Saves the raw JSON settings for a power toy.
         /// </summary>
         void SaveSettings(string alias, string json);
+
+        /// <summary>
+        ///     Gets the enabled flag and settings for every power toy, keyed by their raw key/value store key.
+        /// </summary>
+        IReadOnlyDictionary<string, string?> GetBackup();
+
+        /// <summary>
+        ///     Restores enabled flags and settings previously produced by <see cref="GetBackup"/>.
+        /// </summary>
+        void RestoreBackup(IReadOnlyDictionary<string, string?> values);
     }
 }

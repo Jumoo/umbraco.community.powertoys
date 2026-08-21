@@ -28,17 +28,28 @@ export class DashboardManagerContext extends UmbContextBase {
   #removed = new UmbBasicState<string[]>([]);
   #removed$ = this.#removed.asObservable();
 
+  // Whether the power toy itself is switched on - while it's off, the saved removed-alias set
+  // is kept but never applied (every dashboard comes back), so flipping it back on (or off) is
+  // instantly reversible either way. Same shape as ThemeMakerContext/HelpMenuEditorContext.
+  #enabled = true;
+
   constructor(host: UmbControllerHost) {
     super(host, DASHBOARD_MANAGER_CONTEXT);
 
     this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
       this.#powerToyContext = context;
+      if (!context) return;
       this.#loadRemoved();
+
+      this.observe(context.observeEnabled(DASHBOARD_MANAGER_ALIAS), (enabled) => {
+        this.#enabled = enabled;
+        this.#applyState();
+      });
     });
 
     this.observe(umbExtensionsRegistry.byType("dashboard"), (manifests) => {
       this.#baseline.append(manifests);
-      this.#enforceRemoved();
+      this.#applyState();
     });
   }
 
@@ -51,16 +62,22 @@ export class DashboardManagerContext extends UmbContextBase {
   async #loadRemoved() {
     const settings = await this.#powerToyContext?.getSettings<DashboardManagerSettings>(DASHBOARD_MANAGER_ALIAS);
     this.#removed.setValue(this.#sanitize(settings?.removedAliases ?? []));
-    this.#enforceRemoved();
+    this.#applyState();
   }
 
-  #enforceRemoved() {
-    const removed = this.#removed.getValue() ?? [];
-    const live = umbExtensionsRegistry.getByType("dashboard");
-    removed.forEach((alias) => {
-      if (live.some((manifest) => manifest.alias === alias)) {
-        umbExtensionsRegistry.unregister(alias);
-      }
+  // Reconciles the live extension registry against the removed set that should currently be in
+  // effect - the saved removed aliases while the power toy is enabled, or none at all while
+  // it's disabled. Safe to call any number of times from any trigger (removed aliases loaded,
+  // baseline dashboard registered, enabled flag flipped, removed aliases saved) since it always
+  // compares desired vs. actual state rather than diffing against whatever ran last.
+  #applyState() {
+    const effectiveRemoved = this.#enabled ? this.#removed.getValue() ?? [] : [];
+
+    this.#baseline.getValue()?.forEach((manifest) => {
+      const shouldBeHidden = effectiveRemoved.includes(manifest.alias);
+      const isRegistered = umbExtensionsRegistry.isRegistered(manifest.alias);
+      if (shouldBeHidden && isRegistered) umbExtensionsRegistry.unregister(manifest.alias);
+      else if (!shouldBeHidden && !isRegistered) umbExtensionsRegistry.register(manifest);
     });
   }
 
@@ -76,20 +93,8 @@ export class DashboardManagerContext extends UmbContextBase {
   async save(removedAliases: string[]): Promise<void> {
     removedAliases = this.#sanitize(removedAliases);
     await this.#powerToyContext?.saveSettings<DashboardManagerSettings>(DASHBOARD_MANAGER_ALIAS, { removedAliases });
-
-    const previouslyRemoved = this.#removed.getValue() ?? [];
     this.#removed.setValue(removedAliases);
-
-    // Re-add anything that's no longer removed.
-    const toRestore = previouslyRemoved.filter((alias) => !removedAliases.includes(alias));
-    toRestore.forEach((alias) => {
-      const manifest = this.#baseline.getValue()?.find((m) => m.alias === alias);
-      if (manifest && !umbExtensionsRegistry.isRegistered(alias)) {
-        umbExtensionsRegistry.register(manifest);
-      }
-    });
-
-    this.#enforceRemoved();
+    this.#applyState();
   }
 }
 

@@ -5,6 +5,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "powerToy",
     alias: "PowerToys.PowerToy.LoginCustomizer",
     name: "Login Customizer Power Toy",
+    // Dashboard order across all power toys - see navbar-clock/manifest.ts for the full list.
+    weight: 300,
     meta: {
       label: "Login Customizer",
       description:

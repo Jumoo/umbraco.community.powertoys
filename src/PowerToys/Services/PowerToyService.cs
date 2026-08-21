@@ -27,6 +27,24 @@ namespace PowerToys.Services
         public void SaveSettings(string alias, string json)
             => _keyValueService.SetValue(SettingsKey(alias), json);
 
+        public IReadOnlyDictionary<string, string?> GetBackup()
+            => _keyValueService.FindByKeyPrefix(KeyPrefix) ?? new Dictionary<string, string?>();
+
+        public void RestoreBackup(IReadOnlyDictionary<string, string?> values)
+        {
+            foreach (var (key, value) in values)
+            {
+                if (!key.StartsWith(KeyPrefix, StringComparison.Ordinal) || value is null)
+                {
+                    continue;
+                }
+
+                _keyValueService.SetValue(key, value);
+            }
+        }
+
+        private const string KeyPrefix = "PowerToys.";
+
         private static string EnabledKey(string alias) => $"PowerToys.{alias}.Enabled";
 
         private static string SettingsKey(string alias) => $"PowerToys.{alias}.Settings";

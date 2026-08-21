@@ -1,4 +1,4 @@
-# Umbraco Community PowerToys
+# Power Toys for Umbraco
 
 [![Downloads](https://img.shields.io/nuget/dt/Umbraco.Community.PowerToys?color=cc9900)](https://www.nuget.org/packages/Umbraco.Community.PowerToys/)
 [![NuGet](https://img.shields.io/nuget/vpre/Umbraco.Community.PowerToys?color=0273B3)](https://www.nuget.org/packages/Umbraco.Community.PowerToys)

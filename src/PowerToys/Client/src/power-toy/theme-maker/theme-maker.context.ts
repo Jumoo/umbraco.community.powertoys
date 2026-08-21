@@ -100,6 +100,12 @@ export class ThemeMakerContext extends UmbContextBase {
     const colorsKey = JSON.stringify(theme.colors);
     if (this.#registeredCustomThemeColors.get(theme.alias) === colorsKey) return;
 
+    // Recorded before register() below, not after - registering fires the "theme" byType
+    // observable (custom themes are themes too), which re-enters #applyState synchronously.
+    // Setting this first makes that reentrant call see the up-to-date key and bail out via the
+    // guard above, instead of racing this call to register the same alias a second time.
+    this.#registeredCustomThemeColors.set(theme.alias, colorsKey);
+
     if (umbExtensionsRegistry.isRegistered(theme.alias)) {
       umbExtensionsRegistry.unregister(theme.alias);
     }
@@ -110,7 +116,6 @@ export class ThemeMakerContext extends UmbContextBase {
       weight: 0,
       css: () => Promise.resolve({ css: themeColorsToCss(theme.colors) }),
     });
-    this.#registeredCustomThemeColors.set(theme.alias, colorsKey);
   }
 
   observeInstalledThemes(): Observable<ManifestTheme[]> {

@@ -20,9 +20,7 @@ export const onInit: UmbEntryPointOnInit = async (host, _extensionRegistry) => {
   }
   authContext.configureClient(client);
 
-  console.log("Hello from my extension 🎉");
+  console.debug("Powertoys, power toys, power... toys");
 };
 
-export const onUnload: UmbEntryPointOnUnload = (_host, _extensionRegistry) => {
-  console.log("Goodbye from my extension 👋");
-};
+export const onUnload: UmbEntryPointOnUnload = (_host, _extensionRegistry) => {};

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -79,6 +79,36 @@ export class PowerToysService {
         });
     }
     
+    public static getBackup<ThrowOnError extends boolean = false>(options?: Options<GetBackupData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetBackupResponses, GetBackupErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/backup',
+            ...options
+        });
+    }
+
+    public static restoreBackup<ThrowOnError extends boolean = false>(options: Options<RestoreBackupData, ThrowOnError>) {
+        return (options.client ?? client).post<RestoreBackupResponses, RestoreBackupErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/backup',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
     public static getUrl<ThrowOnError extends boolean = false>(options: Options<GetUrlData, ThrowOnError>) {
         return (options.client ?? client).get<GetUrlResponses, GetUrlErrors, ThrowOnError>({
             security: [

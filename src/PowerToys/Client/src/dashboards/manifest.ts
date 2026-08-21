@@ -19,4 +19,12 @@ export const manifests: Array<UmbExtensionManifest> = [
       },
     ],
   },
+  // The dashboard footer's Backup / Restore button opens this - not scoped to any one power
+  // toy, so it lives alongside the dashboard itself rather than under power-toy/.
+  {
+    type: "modal",
+    alias: "PowerToys.Modal.BackupRestore",
+    name: "Power Toys Backup / Restore Modal",
+    element: () => import("./backup-restore/backup-restore-modal.element.js"),
+  },
 ];

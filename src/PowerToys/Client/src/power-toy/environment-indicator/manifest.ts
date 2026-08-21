@@ -7,6 +7,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "powerToy",
     alias: ENVIRONMENT_INDICATOR_ALIAS,
     name: "Environment Indicator Power Toy",
+    // Dashboard order across all power toys - see navbar-clock/manifest.ts for the full list.
+    weight: 200,
     meta: {
       label: "Environment Indicator",
       description: "Colour the backoffice header (and optionally label it) by matching the current URL against a list of environments.",
