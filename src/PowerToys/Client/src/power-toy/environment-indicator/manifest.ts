@@ -27,12 +27,15 @@ export const manifests: Array<UmbExtensionManifest> = [
     api: () => import("./environment-indicator.context.js"),
   },
   // Optional name label, shown in the same header slot as the navbar clock - only rendered
-  // while the power toy is enabled, gated the same way as the clock's header app.
+  // while the power toy is enabled, gated the same way as the clock's header app. Header apps
+  // sort by weight descending (search=900, help=500, current user=0) - a negative weight
+  // pushes this one after all of them, so it sits last/rightmost.
   {
     type: "headerApp",
     alias: "PowerToys.HeaderApp.EnvironmentIndicator",
     name: "Environment Indicator Header App",
     element: () => import("./environment-indicator.header-app.element.js"),
+    weight: -100,
     conditions: [
       {
         alias: "PowerToys.Condition.PowerToyEnabled",

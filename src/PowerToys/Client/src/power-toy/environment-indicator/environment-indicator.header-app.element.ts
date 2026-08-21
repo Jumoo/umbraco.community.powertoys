@@ -32,7 +32,7 @@ export class PowerToysEnvironmentIndicatorElement extends UmbElementMixin(LitEle
 
   render() {
     if (!this._match || !this._showName) return html``;
-    return html`<span>${this._match.name}</span>`;
+    return html`<span class="badge">${this._match.name}</span>`;
   }
 
   static styles = [
@@ -42,9 +42,17 @@ export class PowerToysEnvironmentIndicatorElement extends UmbElementMixin(LitEle
         align-items: center;
         flex-shrink: 0;
         padding: 0 var(--uui-size-space-4);
+        white-space: nowrap;
+      }
+
+      /* Bordered pill rather than plain text - the header can be any colour an environment
+         picks, so the label needs its own outline to read clearly against all of them. */
+      .badge {
+        padding: var(--uui-size-space-1) var(--uui-size-space-4);
+        border: 1px solid var(--uui-color-header-contrast);
+        border-radius: var(--uui-border-radius);
         font-weight: 700;
         color: var(--uui-color-header-contrast);
-        white-space: nowrap;
       }
     `,
   ];
