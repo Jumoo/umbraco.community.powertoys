@@ -1,0 +1,20 @@
+/* Green accent theme - a light-theme skin using the Material Design green palette (materialui.co/colors). */
+:root {
+  --uui-color-header-surface: #388e3c;
+  --uui-color-header-contrast: #ffffff;
+  --uui-color-header-contrast-emphasis: #ffffff;
+  --uui-color-focus: #4caf50;
+  --uui-color-interactive: #388e3c;
+  --uui-color-interactive-emphasis: #4caf50;
+  --uui-color-interactive-contrast: #ffffff;
+  --uui-color-selected: #4caf50;
+  --uui-color-selected-emphasis: #388e3c;
+  --uui-color-selected-standalone: #1b5e20;
+  --uui-color-selected-contrast: #ffffff;
+  --uui-color-default: #388e3c;
+  --uui-color-default-emphasis: #4caf50;
+  --uui-color-default-standalone: #1b5e20;
+  --uui-color-default-contrast: #ffffff;
+  --uui-color-surface-alt: #e8f5e9;
+  --uui-color-background: #e8f5e9;
+}
