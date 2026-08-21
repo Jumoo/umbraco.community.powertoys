@@ -12,7 +12,7 @@
     "PackageType": "Package",
     "Screenshots": [
       {
-        "ImageUrl": "https://raw.githubusercontent.com/Jumoo/umbraco.community.powertoys/v17/main/docs/dashboard.png",
+        "ImageUrl": "https://raw.githubusercontent.com/Jumoo/umbraco.community.powertoys/v17/main/docs/screenshots/dashboard.png",
         "Caption": "The Power Toys dashboard in the Umbraco Settings section"
       }
     ],

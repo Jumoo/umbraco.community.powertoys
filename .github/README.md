@@ -8,15 +8,7 @@ A dashboard in the Umbraco Settings section for small, focused admin tools ("pow
 tool registers itself against a `powerToy` backoffice extension type, so both this package and
 other packages can add tools to the same dashboard without touching PowerToys' own code.
 
-<!--
-Including screenshots is a really good idea! 
-
-If you put images into /docs/screenshots, then you would reference them in this readme as, for example:
-
-<img alt="..." src="https://github.com/jumoo/umbraco.community.powertoys/blob/v17/main/docs/screenshots/screenshot.png">
-
-And don't forget to add the screenshot files to umbraco-marketplace.json too!
--->
+<img alt="The Power Toys dashboard in the Umbraco Settings section" src="https://github.com/jumoo/umbraco.community.powertoys/blob/v17/main/docs/screenshots/dashboard.png?raw=true">
 
 ## Installation
 
