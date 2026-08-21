@@ -100,7 +100,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
                     <uui-ref-node
                       .name=${environment.name}
                       .detail=${environment.pattern}
-                      @click=${() => this.#onEdit(environment)}>
+                      @open=${() => this.#onEdit(environment)}>
                       <span slot="icon" class="swatch" style="background-color: ${environment.color}"></span>
                       <uui-button
                         slot="actions"
