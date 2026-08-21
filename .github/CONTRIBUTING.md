@@ -5,6 +5,8 @@ Contributions to this package are most welcome!
 There is a test site in the solution to make working with this repository easier.
 It is configured to do an unattended install, check `appSettings.json` for the login details.
 
+Don't forget `npm install` and `npm run build` in the `src/powertoys/client` context to see powertoys in the test site.
+
 ## Where a power toy lives
 
 Each power toy has two halves, both named after the power toy (e.g. `LoginCustomizer`, `LogoChanger`):
