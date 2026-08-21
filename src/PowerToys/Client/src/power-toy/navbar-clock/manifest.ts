@@ -1,8 +1,8 @@
 const POWER_TOY_ALIAS = "PowerToys.PowerToy.NavbarClock";
 
 export const manifests: Array<UmbExtensionManifest> = [
-  // No js/element and no meta.modal - enabled/disabled is the only setting this power
-  // toy has, so the default box (just its description) is all it needs on the dashboard.
+  // No js/element of its own - relies on the default box + meta.modal for its settings,
+  // same shape as Dashboard Manager.
   {
     type: "powerToy",
     alias: POWER_TOY_ALIAS,
@@ -11,6 +11,10 @@ export const manifests: Array<UmbExtensionManifest> = [
       label: "Navbar Clock",
       description: "Shows the current time in the backoffice header while enabled.",
       icon: "icon-time",
+      modal: {
+        element: () => import("./navbar-clock-modal.element.js"),
+        savable: true,
+      },
     },
   },
   // Only shown while the power toy above is enabled - proves out the shared

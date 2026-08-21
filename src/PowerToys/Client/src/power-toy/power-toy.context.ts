@@ -1,7 +1,7 @@
 import { UmbContextBase } from "@umbraco-cms/backoffice/class-api";
 import type { UmbControllerHost } from "@umbraco-cms/backoffice/controller-api";
 import { UmbContextToken } from "@umbraco-cms/backoffice/context-api";
-import { UmbBooleanState } from "@umbraco-cms/backoffice/observable-api";
+import { UmbBasicState, UmbBooleanState } from "@umbraco-cms/backoffice/observable-api";
 import type { Observable } from "@umbraco-cms/backoffice/external/rxjs";
 import { UmbPowerToyRepository } from "./power-toy.repository.js";
 
@@ -15,6 +15,11 @@ export class UmbPowerToyContext extends UmbContextBase {
   // apps, ...) that wants to react live to a power toy's enabled state, rather than each
   // polling the API themselves.
   #enabledStates = new Map<string, UmbBooleanState<boolean>>();
+
+  // Same idea, but for settings - lets a power toy's own element push a live update (via
+  // saveSettings) that another already-running element (e.g. a header app) can react to
+  // immediately, without a reload.
+  #settingsStates = new Map<string, UmbBasicState<unknown>>();
 
   constructor(host: UmbControllerHost) {
     super(host, UMB_POWER_TOY_CONTEXT);
@@ -49,8 +54,24 @@ export class UmbPowerToyContext extends UmbContextBase {
     return this.#repository.getSettings<T>(alias);
   }
 
-  saveSettings<T>(alias: string, settings: T): Promise<void> {
-    return this.#repository.saveSettings(alias, settings);
+  async saveSettings<T>(alias: string, settings: T): Promise<void> {
+    await this.#repository.saveSettings(alias, settings);
+    this.#settingsState<T>(alias).setValue(settings);
+  }
+
+  /** Observable settings for a power toy - fetched once, then kept live by saveSettings. */
+  observeSettings<T>(alias: string): Observable<T | null> {
+    return this.#settingsState<T>(alias).asObservable();
+  }
+
+  #settingsState<T>(alias: string): UmbBasicState<T | null> {
+    let state = this.#settingsStates.get(alias);
+    if (!state) {
+      state = new UmbBasicState<unknown>(null);
+      this.#settingsStates.set(alias, state);
+      this.#repository.getSettings<T>(alias).then((settings) => state?.setValue(settings));
+    }
+    return state as UmbBasicState<T | null>;
   }
 }
 
