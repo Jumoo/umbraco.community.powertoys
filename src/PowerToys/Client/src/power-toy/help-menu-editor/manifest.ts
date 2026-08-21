@@ -7,6 +7,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "powerToy",
     alias: HELP_MENU_EDITOR_ALIAS,
     name: "Help Menu Editor Power Toy",
+    // Dashboard order across all power toys - see navbar-clock/manifest.ts for the full list.
+    weight: 400,
     meta: {
       label: "Help Menu Editor",
       description: "Hide built-in help menu links, add your own, or disable the help menu completely.",

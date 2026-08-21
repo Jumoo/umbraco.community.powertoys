@@ -9,6 +9,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "powerToy",
     alias: THEME_MAKER_ALIAS,
     name: "Theme Maker Power Toy",
+    // Dashboard order across all power toys - see navbar-clock/manifest.ts for the full list.
+    weight: 100,
     meta: {
       label: "Theme Maker",
       description: "List installed backoffice themes and add your own custom themes.",

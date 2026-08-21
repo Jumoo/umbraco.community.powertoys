@@ -7,6 +7,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "powerToy",
     alias: DASHBOARD_MANAGER_ALIAS,
     name: "Dashboard Manager Power Toy",
+    // Dashboard order across all power toys - see navbar-clock/manifest.ts for the full list.
+    weight: 500,
     meta: {
       label: "Dashboard Manager",
       description: "Lists the installed dashboards and lets you hide (or bring back) individual ones.",
