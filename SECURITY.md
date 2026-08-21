@@ -13,5 +13,5 @@ current line, and to the previous one where the issue is serious and the fix is 
 
 Please **do not** open a public issue for a security problem.
 
-Email **kevin@jumoo.co.uk** with a description of the issue, the version affected, and steps to
+Email **info@jumoo.co.uk** with a description of the issue, the version affected, and steps to
 reproduce it. We'll acknowledge within a few working days and keep you updated as we work on it.
