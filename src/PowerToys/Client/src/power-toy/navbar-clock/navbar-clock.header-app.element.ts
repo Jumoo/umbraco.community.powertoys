@@ -1,14 +1,32 @@
 import { LitElement, css, html, customElement, state } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
+import { UMB_POWER_TOY_CONTEXT } from "../power-toy.context.js";
+import { DEFAULT_NAVBAR_CLOCK_SETTINGS, withDefaults, type NavbarClockSettings } from "./navbar-clock-settings.js";
 
-// Entirely client side - no server round-trip, no settings beyond enabled/disabled
-// (handled by the PowerToyEnabled condition on this header app's manifest).
+const POWER_TOY_ALIAS = "PowerToys.PowerToy.NavbarClock";
+
+// No server round-trip of its own beyond reading settings - enabled/disabled is handled by
+// the PowerToyEnabled condition on this header app's manifest; date/time settings come live
+// from UmbPowerToyContext.observeSettings, kept fresh whenever the settings modal saves.
 @customElement("power-toys-navbar-clock")
 export class PowerToysNavbarClockElement extends UmbElementMixin(LitElement) {
   @state()
   private _time = new Date();
 
+  @state()
+  private _settings: NavbarClockSettings = DEFAULT_NAVBAR_CLOCK_SETTINGS;
+
   #interval?: number;
+
+  constructor() {
+    super();
+    this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
+      if (!context) return;
+      this.observe(context.observeSettings<NavbarClockSettings>(POWER_TOY_ALIAS), (settings) => {
+        this._settings = withDefaults(settings);
+      });
+    });
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -24,7 +42,11 @@ export class PowerToysNavbarClockElement extends UmbElementMixin(LitElement) {
   }
 
   render() {
-    return html`<span>${this._time.toLocaleTimeString()}</span>`;
+    const parts = [
+      this._settings.showDate ? this.localize.date(this._time, { dateStyle: this._settings.dateStyle }) : "",
+      this._settings.showTime ? this.localize.date(this._time, { timeStyle: this._settings.timeStyle }) : "",
+    ].filter(Boolean);
+    return html`<span>${parts.join(" ")}</span>`;
   }
 
   static styles = [
@@ -32,9 +54,11 @@ export class PowerToysNavbarClockElement extends UmbElementMixin(LitElement) {
       :host {
         display: inline-flex;
         align-items: center;
+        flex-shrink: 0;
         padding: 0 var(--uui-size-space-4);
         font-variant-numeric: tabular-nums;
         color: var(--uui-color-header-contrast);
+        white-space: nowrap;
       }
     `,
   ];
