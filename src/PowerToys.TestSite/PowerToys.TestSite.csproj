@@ -25,6 +25,12 @@
   <PropertyGroup>
     <!-- Razor files are needed for the backoffice to work correctly -->
     <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
+
+    <!-- The starter kit's views reference ModelsBuilder classes that only exist once generated
+         against a running site, so they can't compile at build time. Defer view compilation to
+         runtime instead of failing the build. -->
+    <RazorCompileOnBuild>false</RazorCompileOnBuild>
+    <RazorCompileOnPublish>false</RazorCompileOnPublish>
   </PropertyGroup>
 
 </Project>
