@@ -1,7 +1,9 @@
 import { manifests as entrypoints } from "./entrypoints/manifest.js";
 import { manifests as dashboards } from "./dashboards/manifest.js";
 import { manifests as powerToy } from "./power-toy/manifest.js";
-import { manifests as examplePowerToy } from "./power-toy/example/manifest.js";
+// Kept in the codebase as a worked example for anyone adding a new power toy, but not
+// registered - it's not a real tool, so it shouldn't show up on the dashboard.
+// import { manifests as examplePowerToy } from "./power-toy/example/manifest.js";
 import { manifests as navbarClockPowerToy } from "./power-toy/navbar-clock/manifest.js";
 import { manifests as dashboardManagerPowerToy } from "./power-toy/dashboard-manager/manifest.js";
 import { manifests as loginCustomizerPowerToy } from "./power-toy/login-customizer/manifest.js";
@@ -15,7 +17,7 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...entrypoints,
   ...dashboards,
   ...powerToy,
-  ...examplePowerToy,
+  // ...examplePowerToy,
   ...navbarClockPowerToy,
   ...dashboardManagerPowerToy,
   ...loginCustomizerPowerToy,
