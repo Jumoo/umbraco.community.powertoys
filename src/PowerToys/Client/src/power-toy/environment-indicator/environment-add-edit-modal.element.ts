@@ -48,17 +48,19 @@ export class EnvironmentAddEditModalElement extends UmbModalBaseElement<object, 
               @input=${(e: UUIInputEvent) => (this._name = String(e.target.value ?? ""))}>
             </uui-input>
           </umb-property-layout>
-          <umb-property-layout label="URL Pattern" orientation="horizontal">
+          <umb-property-layout label="Pattern" orientation="horizontal">
             <uui-input
               slot="editor"
               .value=${this._pattern}
-              placeholder="staging\\.example\\.com"
+              placeholder="staging\\.example\\.com|Staging"
               @input=${(e: UUIInputEvent) => (this._pattern = String(e.target.value ?? ""))}>
             </uui-input>
           </umb-property-layout>
           <p class="note">
-            A regular expression tested against the current page's URL. Use alternation
-            (<code>site1\\.|site2\\.</code>) to match more than one host with a single entry.
+            A regular expression tested against the current page's URL, or the server's
+            environment name (e.g. <code>Development</code>, <code>Staging</code>, <code>Production</code>)
+            if the URL does not match. Use alternation (<code>site1\\.|site2\\.</code>) to match more than one
+            value.
           </p>
           <umb-property-layout label="Colour" orientation="horizontal">
             <div slot="editor" class="color-row">

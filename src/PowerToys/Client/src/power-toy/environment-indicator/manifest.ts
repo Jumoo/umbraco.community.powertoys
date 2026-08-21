@@ -11,7 +11,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     weight: 200,
     meta: {
       label: "Environment Indicator",
-      description: "Colour the backoffice header (and optionally label it) by matching the current URL against a list of environments.",
+      description: "Colour the backoffice header (and optionally label it) by matching the current URL or server environment name against a list of environments.",
       icon: "icon-height",
       modal: {
         element: () => import("./environment-indicator-modal.element.js"),

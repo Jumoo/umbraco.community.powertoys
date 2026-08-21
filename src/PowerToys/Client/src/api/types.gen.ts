@@ -146,6 +146,29 @@ export type RestoreBackupResponses = {
     200: unknown;
 };
 
+export type GetEnvironmentNameData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/environment';
+};
+
+export type GetEnvironmentNameErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetEnvironmentNameResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetEnvironmentNameResponse = GetEnvironmentNameResponses[keyof GetEnvironmentNameResponses];
+
 export type GetUrlData = {
     body?: never;
     path: {
