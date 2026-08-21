@@ -98,6 +98,54 @@ export type SaveSettingsResponses = {
     200: unknown;
 };
 
+export type GetBackupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/backup';
+};
+
+export type GetBackupErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetBackupResponses = {
+    /**
+     * OK
+     */
+    200: {
+        [key: string]: string;
+    };
+};
+
+export type GetBackupResponse = GetBackupResponses[keyof GetBackupResponses];
+
+export type RestoreBackupData = {
+    body?: {
+        [key: string]: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/backup';
+};
+
+export type RestoreBackupErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type RestoreBackupResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetUrlData = {
     body?: never;
     path: {

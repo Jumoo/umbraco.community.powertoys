@@ -360,3 +360,8 @@ src/.idea
 
 # MacOS
 .DS_Store
+
+# Not a Visual Studio backup folder - the Backup/Restore power toy's own source directory.
+# Must stay after the generic "Backup*/" rule above, since git lets a later pattern in the
+# file override an earlier one, not the other way round.
+!src/PowerToys/Client/src/dashboards/backup-restore/
