@@ -10,7 +10,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     name: "Navbar Clock Power Toy",
     // Dashboard order across all power toys: Navbar Clock (600), Dashboard Manager (500),
     // Help Menu Editor (400), Login Customizer (300), Environment Indicator (200), Theme
-    // Maker (100) - weights sort descending, and the gap of 100 leaves room to insert others.
+    // Maker (100), Logo Changer (50) - weights sort descending, and the gap of 100 (50
+    // for Logo Changer) leaves room to insert others.
     weight: 600,
     js: () => import("./navbar-clock-body.element.js"),
     meta: {
