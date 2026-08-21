@@ -4,6 +4,14 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+## [17.0.0-rc1] - 2026-08-21
+
+### Fixed
+
+- Startup exception on a brand new site: power toy boot hooks (Login Customizer, Logo Changer) no
+  longer read from the database before Umbraco has finished configuring its connection string.
+- Power toys are now disabled by default on a new install instead of coming enabled automatically.
+
 ## [17.0.0-rc] - 2026-08-21
 
 First release candidate for Umbraco 17.
