@@ -26,6 +26,15 @@ export class UmbPowerToyRepository extends UmbControllerBase {
   async saveSettings<T>(alias: string, settings: T): Promise<void> {
     await PowerToysService.saveSettings({ path: { alias }, body: settings });
   }
+
+  async getEnvironmentName(): Promise<string | null> {
+    try {
+      const { data } = await PowerToysService.getEnvironmentName();
+      return data ?? null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export default UmbPowerToyRepository;

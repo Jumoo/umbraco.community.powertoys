@@ -34,6 +34,8 @@ export class EnvironmentIndicatorContext extends UmbContextBase {
   #match = new UmbBasicState<EnvironmentDefinition | undefined>(undefined);
   #match$ = this.#match.asObservable();
 
+  #environmentName: string | null = null;
+
   constructor(host: UmbControllerHost) {
     super(host, ENVIRONMENT_INDICATOR_CONTEXT);
 
@@ -50,9 +52,11 @@ export class EnvironmentIndicatorContext extends UmbContextBase {
   }
 
   async #loadSettings() {
-    const settings = await this.#powerToyContext?.getSettings<EnvironmentIndicatorSettings>(
-      ENVIRONMENT_INDICATOR_ALIAS,
-    );
+    const [settings, environmentName] = await Promise.all([
+      this.#powerToyContext?.getSettings<EnvironmentIndicatorSettings>(ENVIRONMENT_INDICATOR_ALIAS),
+      this.#powerToyContext?.getEnvironmentName(),
+    ]);
+    this.#environmentName = environmentName ?? null;
     this.#settings.setValue(withDefaults(settings));
     this.#applyState();
   }
@@ -66,7 +70,7 @@ export class EnvironmentIndicatorContext extends UmbContextBase {
     if (!settings) return;
     const active = this.#enabled ? settings : DEFAULT_ENVIRONMENT_INDICATOR_SETTINGS;
 
-    const match = matchEnvironment(active.environments, window.location.href);
+    const match = matchEnvironment(active.environments, window.location.href, this.#environmentName);
     this.#match.setValue(match);
 
     if (match?.color) {

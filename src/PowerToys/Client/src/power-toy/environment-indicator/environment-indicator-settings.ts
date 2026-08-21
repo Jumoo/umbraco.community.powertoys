@@ -32,12 +32,15 @@ export function withDefaults(
 }
 
 // First matching row wins - lets someone order a specific host above a broader catch-all
-// pattern. Invalid regex in a row is skipped rather than throwing, since it can be mid-edit.
+// pattern. If no environment matches the URL, tests the pattern against the server's
+// EnvironmentName (e.g. Development, Staging, Production). Invalid regex in a row is skipped
+// rather than throwing, since it can be mid-edit.
 export function matchEnvironment(
   environments: EnvironmentDefinition[],
   href: string,
+  environmentName?: string | null,
 ): EnvironmentDefinition | undefined {
-  return environments.find((environment) => {
+  const urlMatch = environments.find((environment) => {
     if (!environment.pattern) return false;
     try {
       return new RegExp(environment.pattern, "i").test(href);
@@ -45,4 +48,19 @@ export function matchEnvironment(
       return false;
     }
   });
+
+  if (urlMatch) return urlMatch;
+
+  if (environmentName) {
+    return environments.find((environment) => {
+      if (!environment.pattern) return false;
+      try {
+        return new RegExp(environment.pattern, "i").test(environmentName);
+      } catch {
+        return false;
+      }
+    });
+  }
+
+  return undefined;
 }

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -91,9 +91,9 @@ export class PowerToysService {
             ...options
         });
     }
-
-    public static restoreBackup<ThrowOnError extends boolean = false>(options: Options<RestoreBackupData, ThrowOnError>) {
-        return (options.client ?? client).post<RestoreBackupResponses, RestoreBackupErrors, ThrowOnError>({
+    
+    public static restoreBackup<ThrowOnError extends boolean = false>(options?: Options<RestoreBackupData, ThrowOnError>) {
+        return (options?.client ?? client).post<RestoreBackupResponses, RestoreBackupErrors, ThrowOnError>({
             security: [
                 {
                     scheme: 'bearer',
@@ -104,11 +104,24 @@ export class PowerToysService {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
-                ...options.headers
+                ...options?.headers
             }
         });
     }
-
+    
+    public static getEnvironmentName<ThrowOnError extends boolean = false>(options?: Options<GetEnvironmentNameData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetEnvironmentNameResponses, GetEnvironmentNameErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/environment',
+            ...options
+        });
+    }
+    
     public static getUrl<ThrowOnError extends boolean = false>(options: Options<GetUrlData, ThrowOnError>) {
         return (options.client ?? client).get<GetUrlResponses, GetUrlErrors, ThrowOnError>({
             security: [

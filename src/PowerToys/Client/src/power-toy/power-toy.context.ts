@@ -73,6 +73,10 @@ export class UmbPowerToyContext extends UmbContextBase {
     }
     return state as UmbBasicState<T | null>;
   }
+
+  getEnvironmentName(): Promise<string | null> {
+    return this.#repository.getEnvironmentName();
+  }
 }
 
 export const UMB_POWER_TOY_CONTEXT = new UmbContextToken<UmbPowerToyContext>("UmbPowerToyContext");

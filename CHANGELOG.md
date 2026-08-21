@@ -4,6 +4,8 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- Allow use of the dotnet environmentName as well as URL matching for environment-indicator
+
 ## [17.0.0-rc1] - 2026-08-21
 
 ### Fixed
