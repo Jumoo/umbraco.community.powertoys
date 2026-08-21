@@ -9,7 +9,7 @@ body:
 - type: input
   id: "PackageVersion"
   attributes:
-    label: "Which PowerToys version are you using?"
+    label: "Which Power Toys version are you using?"
     description: "Leave blank if you're not sure: the latest version will be assumed."
   validations:
     required: false

@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PackageId>Umbraco.Community.PowerToys</PackageId>
     <Product>Umbraco.Community.PowerToys</Product>
-    <Title>Umbraco Community PowerToys</Title>
+    <Title>Power Toys for Umbraco</Title>
     <Description>A collection of small, extendable tools for the Umbraco backoffice.</Description>
     <PackageTags>umbraco umbraco-marketplace umbraco-cms</PackageTags>
     <PackageReadmeFile>README_nuget.md</PackageReadmeFile>

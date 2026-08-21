@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Umbraco Community PowerToys ships one release line per Umbraco major it targets. Fixes go to the
+Power Toys for Umbraco ships one release line per Umbraco major it targets. Fixes go to the
 current line, and to the previous one where the issue is serious and the fix is practical.
 
 | Version | Branch | Supported |
