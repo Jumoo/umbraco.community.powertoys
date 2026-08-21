@@ -9,7 +9,7 @@ namespace PowerToys.PowerToy.LoginCustomizer
 {
     /// <summary>
     ///     Serves the Login Customizer's custom CSS as a small injection script, anonymously - the
-    ///     login screen has no auth context, so this deliberately sits outside PowerToysApiControllerBase
+    ///     login screen has no auth context, so this deliberately sits outside PowerToysControllerBase
     ///     (which requires backoffice auth) rather than reusing the generic settings endpoint.
     ///     Registered as a public "appEntryPoint" manifest by PowerToysPackageManifestReader.
     /// </summary>

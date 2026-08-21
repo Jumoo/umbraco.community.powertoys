@@ -13,7 +13,7 @@ namespace PowerToys.Controllers
     /// </summary>
     [ApiVersion("1.0")]
     [ApiExplorerSettings(GroupName = "PowerToys")]
-    public class MediaController : PowerToysApiControllerBase
+    public class MediaController : PowerToysAuthControllerBase
     {
         private readonly IPublishedUrlProvider _publishedUrlProvider;
 
