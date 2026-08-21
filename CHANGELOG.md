@@ -4,6 +4,23 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+## [17.0.0-rc] - 2026-08-21
+
+First release candidate for Umbraco 17.
+
 ### Added
 
+- Power Toys dashboard in the Umbraco Settings section, with a `powerToy` extension type and
+  shared context/condition so other packages can register their own tools without touching this
+  package's code.
+- Built-in power toys:
+  - Navbar Clock - shows the current time in the backoffice header.
+  - Dashboard Manager - lists installed dashboards and lets you hide (or bring back) individual ones.
+  - Login Customizer - customizes the backoffice login screen's images and password reset option.
+  - Help Menu Editor - hides built-in help menu links, adds your own, or disables the help menu.
+  - Environment Indicator - colours (and optionally labels) the backoffice header by matching the
+    current URL against a list of environments.
+  - Theme Maker - lists installed backoffice themes and lets you add your own custom themes.
+  - Logo Changer - customizes the backoffice logo.
+- Backup/restore of all power toy settings.
 - Initial project skeleton: package project, test site, and CI workflows.
