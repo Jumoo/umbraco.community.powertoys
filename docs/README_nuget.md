@@ -7,3 +7,5 @@
 A dashboard in the Umbraco Settings section for small, focused admin tools ("power toys"). Other
 packages can add their own tools to the dashboard by registering against PowerToys' `powerToy`
 backoffice extension type - no dependency on this package's code required.
+
+![Power Toys dashboard](https://raw.githubusercontent.com/Jumoo/umbraco.community.powertoys/v17/main/docs/screenshots/dashboard.png)
