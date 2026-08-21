@@ -5,7 +5,7 @@
       "ImageUrl": "https://github.com/jumoo.png"
     },
     "Category": "Developer Tools",
-    "Description": "A dashboard in the Umbraco Settings section for small, extendable admin tools (\"power toys\") - enable/disable each one, and let other packages register their own without touching this package's code.",
+    "Description": "A dashboard in the Umbraco Settings section that collects small backoffice admin tools (\"power toys\") in one place, each with its own on/off switch. Ships with tools including a Navbar Clock, Login Customizer, Logo Changer, Help Menu Editor, Environment Indicator, Theme Maker, and Dashboard Manager, and other packages can register their own power toys onto the same dashboard without touching this package's code.",
     "DocumentationUrl": "https://github.com/jumoo/umbraco.community.powertoys/wiki",
     "LicenseTypes": [ "Free" ],
     "IssueTrackerUrl": "https://github.com/jumoo/umbraco.community.powertoys/issues",
