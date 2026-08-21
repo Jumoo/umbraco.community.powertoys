@@ -67,7 +67,7 @@ jobs:
           -o out
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-build-output
           path: out/*.nupkg
