@@ -1,0 +1,20 @@
+/* Blue accent theme - a light-theme skin using the Material Design blue palette (materialui.co/colors). */
+:root {
+  --uui-color-header-surface: #1976d2;
+  --uui-color-header-contrast: #ffffff;
+  --uui-color-header-contrast-emphasis: #ffffff;
+  --uui-color-focus: #2196f3;
+  --uui-color-interactive: #1976d2;
+  --uui-color-interactive-emphasis: #2196f3;
+  --uui-color-interactive-contrast: #ffffff;
+  --uui-color-selected: #2196f3;
+  --uui-color-selected-emphasis: #1976d2;
+  --uui-color-selected-standalone: #0d47a1;
+  --uui-color-selected-contrast: #ffffff;
+  --uui-color-default: #1976d2;
+  --uui-color-default-emphasis: #2196f3;
+  --uui-color-default-standalone: #0d47a1;
+  --uui-color-default-contrast: #ffffff;
+  --uui-color-surface-alt: #e3f2fd;
+  --uui-color-background: #e3f2fd;
+}

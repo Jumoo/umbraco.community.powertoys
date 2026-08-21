@@ -1,0 +1,20 @@
+/* Red accent theme - a light-theme skin using the Material Design red palette (materialui.co/colors). */
+:root {
+  --uui-color-header-surface: #d32f2f;
+  --uui-color-header-contrast: #ffffff;
+  --uui-color-header-contrast-emphasis: #ffffff;
+  --uui-color-focus: #f44336;
+  --uui-color-interactive: #d32f2f;
+  --uui-color-interactive-emphasis: #f44336;
+  --uui-color-interactive-contrast: #ffffff;
+  --uui-color-selected: #f44336;
+  --uui-color-selected-emphasis: #d32f2f;
+  --uui-color-selected-standalone: #b71c1c;
+  --uui-color-selected-contrast: #ffffff;
+  --uui-color-default: #d32f2f;
+  --uui-color-default-emphasis: #f44336;
+  --uui-color-default-standalone: #b71c1c;
+  --uui-color-default-contrast: #ffffff;
+  --uui-color-surface-alt: #ffebee;
+  --uui-color-background: #ffebee;
+}

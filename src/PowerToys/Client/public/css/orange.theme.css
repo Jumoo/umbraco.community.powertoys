@@ -1,0 +1,20 @@
+/* Orange accent theme - a light-theme skin using the Material Design orange palette (materialui.co/colors). */
+:root {
+  --uui-color-header-surface: #f57c00;
+  --uui-color-header-contrast: #ffffff;
+  --uui-color-header-contrast-emphasis: #ffffff;
+  --uui-color-focus: #ff9800;
+  --uui-color-interactive: #f57c00;
+  --uui-color-interactive-emphasis: #ff9800;
+  --uui-color-interactive-contrast: #ffffff;
+  --uui-color-selected: #ff9800;
+  --uui-color-selected-emphasis: #f57c00;
+  --uui-color-selected-standalone: #e65100;
+  --uui-color-selected-contrast: #ffffff;
+  --uui-color-default: #f57c00;
+  --uui-color-default-emphasis: #ff9800;
+  --uui-color-default-standalone: #e65100;
+  --uui-color-default-contrast: #ffffff;
+  --uui-color-surface-alt: #fff3e0;
+  --uui-color-background: #fff3e0;
+}
