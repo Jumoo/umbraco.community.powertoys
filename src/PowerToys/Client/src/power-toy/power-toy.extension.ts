@@ -33,6 +33,11 @@ export interface MetaPowerToyModal {
   element: ElementLoaderProperty<HTMLElement>;
   /** Sidebar size - defaults to "small". */
   size?: UUIModalSidebarSize;
+  /**
+   * Set true to show a Save button that calls the content element's own `save()`
+   * (see UmbPowerToyElement) before closing. Omit for read-only/informational modals.
+   */
+  savable?: boolean;
 }
 
 declare global {
