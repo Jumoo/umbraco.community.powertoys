@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, PingData, PingErrors, PingResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -76,6 +76,19 @@ export class PowerToysService {
                 'Content-Type': 'application/json',
                 ...options.headers
             }
+        });
+    }
+    
+    public static getUrl<ThrowOnError extends boolean = false>(options: Options<GetUrlData, ThrowOnError>) {
+        return (options.client ?? client).get<GetUrlResponses, GetUrlErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/media/{id}/url',
+            ...options
         });
     }
     

@@ -11,6 +11,7 @@ using Umbraco.Cms.Api.Management.OpenApi;
 using Umbraco.Cms.Api.Common.OpenApi;
 using Umbraco.Cms.Infrastructure.Manifest;
 using Umbraco.Extensions;
+using PowerToys.PowerToy.LoginCustomizer;
 using PowerToys.Services;
 
 namespace PowerToys.Composers
@@ -24,6 +25,8 @@ namespace PowerToys.Composers
             builder.Services.AddUnique<IPowerToyService, PowerToyService>();
 
             builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
+
+            builder.AddLoginCustomizer();
 
             builder.Services.Configure<SwaggerGenOptions>(opt =>
             {
