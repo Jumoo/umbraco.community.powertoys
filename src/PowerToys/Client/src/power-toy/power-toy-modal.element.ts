@@ -97,7 +97,6 @@ export class PowerToysModalElement extends UmbModalBaseElement<PowerToyModalData
         padding: var(--uui-size-space-4) var(--uui-size-space-5);
         background-color: var(--uui-color-warning);
         color: var(--uui-color-warning-contrast);
-        border: 1px solid var(--uui-color-warning-standalone);
         border-radius: var(--uui-border-radius);
       }
     `,
