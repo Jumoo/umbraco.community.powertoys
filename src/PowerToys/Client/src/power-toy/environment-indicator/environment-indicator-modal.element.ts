@@ -128,7 +128,11 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
                       .name=${environment.name}
                       .detail=${environment.pattern}
                       @open=${() => this.#onEdit(environment)}>
-                      <span slot="icon" class="swatch" style="background-color: ${environment.color}"></span>
+                      <uui-color-swatch
+                        slot="icon"
+                        label=${environment.name}
+                        value=${environment.color}
+                        style="--uui-swatch-size: 1.4em;"></uui-color-swatch>
                       <uui-button
                         slot="actions"
                         compact
@@ -176,16 +180,8 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
         cursor: pointer;
       }
 
-      uui-ref-node.umb-sorter-placeholder {
+      uui-ref-node[drag-placeholder] {
         opacity: 0.2;
-      }
-
-      .swatch {
-        display: inline-block;
-        width: var(--uui-size-6);
-        height: var(--uui-size-6);
-        border-radius: 50%;
-        border: 1px solid var(--uui-color-border);
       }
 
       uui-button[look="placeholder"] {
