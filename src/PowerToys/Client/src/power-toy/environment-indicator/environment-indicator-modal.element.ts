@@ -1,6 +1,15 @@
-import { LitElement, css, html, customElement, property, state } from "@umbraco-cms/backoffice/external/lit";
+import {
+  LitElement,
+  css,
+  html,
+  customElement,
+  property,
+  repeat,
+  state,
+} from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
+import { UmbSorterController } from "@umbraco-cms/backoffice/sorter";
 import type { ManifestPowerToy } from "../power-toy.extension.js";
 import type { UmbPowerToyElement } from "../power-toy-element.interface.js";
 import {
@@ -29,6 +38,17 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
   #context?: EnvironmentIndicatorContext;
   #modalManager?: typeof UMB_MODAL_MANAGER_CONTEXT.TYPE;
 
+  #sorter = new UmbSorterController<EnvironmentDefinition>(this, {
+    getUniqueOfElement: (element) => element.id,
+    getUniqueOfModel: (modelEntry) => modelEntry.alias,
+    identifier: "Jumoo.SorterIdentifier.EnvironmentIndicator",
+    itemSelector: "uui-ref-node",
+    containerSelector: "uui-ref-list",
+    onChange: ({ model }) => {
+      this._settings = { ...this._settings, environments: model };
+    },
+  });
+
   constructor() {
     super();
     this.consumeContext(UMB_MODAL_MANAGER_CONTEXT, (context) => {
@@ -39,6 +59,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
       if (!context) return;
       this.observe(context.observeSettings(), (settings) => {
         this._settings = withDefaults(settings);
+        this.#sorter.setModel(this._settings.environments);
       });
     });
   }
@@ -56,6 +77,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
       ...this._settings,
       environments: this._settings.environments.filter((environment) => environment.alias !== alias),
     };
+    this.#sorter.setModel(this._settings.environments);
   };
 
   async #onAdd() {
@@ -70,6 +92,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
       ...this._settings,
       environments: [...this._settings.environments, { alias: crypto.randomUUID(), ...value }],
     };
+    this.#sorter.setModel(this._settings.environments);
   }
 
   async #onEdit(environment: EnvironmentDefinition) {
@@ -86,6 +109,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
         existing.alias === environment.alias ? { ...existing, ...value } : existing,
       ),
     };
+    this.#sorter.setModel(this._settings.environments);
   }
 
   render() {
@@ -95,9 +119,12 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
         ${this._settings.environments.length
           ? html`
               <uui-ref-list>
-                ${this._settings.environments.map(
+                ${repeat(
+                  this._settings.environments,
+                  (environment) => environment.alias,
                   (environment) => html`
                     <uui-ref-node
+                      id=${environment.alias}
                       .name=${environment.name}
                       .detail=${environment.pattern}
                       @open=${() => this.#onEdit(environment)}>
@@ -147,6 +174,10 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
 
       uui-ref-node {
         cursor: pointer;
+      }
+
+      uui-ref-node.umb-sorter-placeholder {
+        opacity: 0.2;
       }
 
       .swatch {
