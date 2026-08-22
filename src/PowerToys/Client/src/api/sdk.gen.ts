@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -49,6 +49,19 @@ export class PowerToysService {
         });
     }
     
+    public static getEnabledLocked<ThrowOnError extends boolean = false>(options: Options<GetEnabledLockedData, ThrowOnError>) {
+        return (options.client ?? client).get<GetEnabledLockedResponses, GetEnabledLockedErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/enabled/locked',
+            ...options
+        });
+    }
+
     public static getSettings<ThrowOnError extends boolean = false>(options: Options<GetSettingsData, ThrowOnError>) {
         return (options.client ?? client).get<GetSettingsResponses, GetSettingsErrors, ThrowOnError>({
             security: [
@@ -79,6 +92,19 @@ export class PowerToysService {
         });
     }
     
+    public static getSettingsLocked<ThrowOnError extends boolean = false>(options: Options<GetSettingsLockedData, ThrowOnError>) {
+        return (options.client ?? client).get<GetSettingsLockedResponses, GetSettingsLockedErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/{alias}/settings/locked',
+            ...options
+        });
+    }
+
     public static getBackup<ThrowOnError extends boolean = false>(options?: Options<GetBackupData, ThrowOnError>) {
         return (options?.client ?? client).get<GetBackupResponses, GetBackupErrors, ThrowOnError>({
             security: [

@@ -18,6 +18,12 @@ export class UmbPowerToyRepository extends UmbControllerBase {
     await PowerToysService.setEnabled({ path: { alias }, body: enabled });
   }
 
+  /** Whether the enabled flag comes from an appsettings.json override and can't be changed here. */
+  async isEnabledLocked(alias: string): Promise<boolean> {
+    const { data } = await PowerToysService.getEnabledLocked({ path: { alias } });
+    return data ?? false;
+  }
+
   async getSettings<T>(alias: string): Promise<T | null> {
     const { data } = await PowerToysService.getSettings({ path: { alias } });
     return (data as T) ?? null;
@@ -25,6 +31,12 @@ export class UmbPowerToyRepository extends UmbControllerBase {
 
   async saveSettings<T>(alias: string, settings: T): Promise<void> {
     await PowerToysService.saveSettings({ path: { alias }, body: settings });
+  }
+
+  /** Whether the settings come from an appsettings.json override and can't be changed here. */
+  async isSettingsLocked(alias: string): Promise<boolean> {
+    const { data } = await PowerToysService.getSettingsLocked({ path: { alias } });
+    return data ?? false;
   }
 
   async getEnvironmentName(): Promise<string | null> {

@@ -21,6 +21,9 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
   @state()
   private _enabled = true;
 
+  @state()
+  private _enabledLocked = false;
+
   #powerToyContext?: UmbPowerToyContext;
 
   constructor() {
@@ -33,7 +36,12 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
 
   async #loadEnabled() {
     if (!this.manifest?.alias || !this.#powerToyContext) return;
-    this._enabled = await this.#powerToyContext.isEnabled(this.manifest.alias);
+    const [enabled, locked] = await Promise.all([
+      this.#powerToyContext.isEnabled(this.manifest.alias),
+      this.#powerToyContext.isEnabledLocked(this.manifest.alias),
+    ]);
+    this._enabled = enabled;
+    this._enabledLocked = locked;
   }
 
   updated() {
@@ -41,6 +49,7 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
   }
 
   #onToggle = (e: Event) => {
+    if (this._enabledLocked) return;
     this._enabled = (e.target as HTMLInputElement).checked;
     if (this.manifest?.alias) {
       this.#powerToyContext?.setEnabled(this.manifest.alias, this._enabled);
@@ -67,6 +76,8 @@ export class PowerToysCardElement extends UmbElementMixin(LitElement) {
           slot="header-actions"
           label="Enable this power toy"
           label-position="left"
+          ?disabled=${this._enabledLocked}
+          title=${this._enabledLocked ? "Managed via appsettings.json" : ""}
           .checked=${this._enabled}
           @change=${this.#onToggle}>
         </uui-toggle>

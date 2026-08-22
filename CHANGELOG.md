@@ -5,6 +5,10 @@ Notable changes to `Umbraco.Community.PowerToys`.
 ## Unreleased
 
 - Allow use of the dotnet environmentName as well as URL matching for environment-indicator
+- Drag-and-drop reordering of environments in the Environment Indicator settings
+- Power toy settings (and the enabled flag) can now be locked to a value set in
+  `appsettings.json`, under a `PowerToys:{Name}` section - a config-provided value takes
+  priority over whatever's stored in the backoffice, and the settings UI shows it as read-only
 
 ## [17.0.0-rc1] - 2026-08-21
 
