@@ -44,6 +44,7 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
     identifier: "Jumoo.SorterIdentifier.EnvironmentIndicator",
     itemSelector: "uui-ref-node",
     containerSelector: "uui-ref-list",
+    handleSelector: "uui-symbol-drag-handle",
     onChange: ({ model }) => {
       this._settings = { ...this._settings, environments: model };
     },
@@ -128,7 +129,13 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
                       .name=${environment.name}
                       .detail=${environment.pattern}
                       @open=${() => this.#onEdit(environment)}>
-                      <span slot="icon" class="swatch" style="background-color: ${environment.color}"></span>
+                      <div slot="icon" class="icon-group">
+                        <uui-symbol-drag-handle label="Drag to reorder" @click=${(e: Event) => e.stopPropagation()}></uui-symbol-drag-handle>
+                        <uui-color-swatch
+                          label=${environment.name}
+                          value=${environment.color}
+                          style="--uui-swatch-size: 1.4em;"></uui-color-swatch>
+                      </div>
                       <uui-button
                         slot="actions"
                         compact
@@ -176,16 +183,18 @@ export class EnvironmentIndicatorModalElement extends UmbElementMixin(LitElement
         cursor: pointer;
       }
 
-      uui-ref-node.umb-sorter-placeholder {
+      uui-ref-node[drag-placeholder] {
         opacity: 0.2;
       }
 
-      .swatch {
-        display: inline-block;
-        width: var(--uui-size-6);
-        height: var(--uui-size-6);
-        border-radius: 50%;
-        border: 1px solid var(--uui-color-border);
+      .icon-group {
+        display: flex;
+        align-items: center;
+        gap: var(--uui-size-space-2);
+      }
+
+      uui-symbol-drag-handle {
+        cursor: grab;
       }
 
       uui-button[look="placeholder"] {
