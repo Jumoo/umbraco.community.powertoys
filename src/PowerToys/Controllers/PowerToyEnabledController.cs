@@ -24,12 +24,25 @@ namespace PowerToys.Controllers
         [ProducesResponseType<bool>(StatusCodes.Status200OK)]
         public bool GetEnabled(string alias) => _powerToyService.IsEnabled(alias);
 
+        [HttpGet("{alias}/enabled/locked")]
+        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+        public bool GetEnabledLocked(string alias) => _powerToyService.IsEnabledLocked(alias);
+
         [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         [HttpPut("{alias}/enabled")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult SetEnabled(string alias, [FromBody] bool enabled)
         {
-            _powerToyService.SetEnabled(alias, enabled);
+            try
+            {
+                _powerToyService.SetEnabled(alias, enabled);
+            }
+            catch (PowerToySettingsLockedException ex)
+            {
+                return Conflict(ex.Message);
+            }
+
             return Ok();
         }
     }

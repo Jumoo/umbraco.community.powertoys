@@ -35,6 +35,11 @@ export class UmbPowerToyContext extends UmbContextBase {
     this.#enabledState(alias).setValue(enabled);
   }
 
+  /** Whether the enabled flag is fixed by an appsettings.json override. */
+  isEnabledLocked(alias: string): Promise<boolean> {
+    return this.#repository.isEnabledLocked(alias);
+  }
+
   /** Observable enabled state for a power toy - fetched once, then kept live by setEnabled. */
   observeEnabled(alias: string): Observable<boolean> {
     return this.#enabledState(alias).asObservable();
@@ -76,6 +81,11 @@ export class UmbPowerToyContext extends UmbContextBase {
 
   getEnvironmentName(): Promise<string | null> {
     return this.#repository.getEnvironmentName();
+  }
+
+  /** Whether the settings are fixed by an appsettings.json override. */
+  isSettingsLocked(alias: string): Promise<boolean> {
+    return this.#repository.isSettingsLocked(alias);
   }
 }
 

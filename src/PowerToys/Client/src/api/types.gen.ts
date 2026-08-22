@@ -43,6 +43,10 @@ export type SetEnabledErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * Conflict
+     */
+    409: unknown;
 };
 
 export type SetEnabledResponses = {
@@ -51,6 +55,31 @@ export type SetEnabledResponses = {
      */
     200: unknown;
 };
+
+export type GetEnabledLockedData = {
+    body?: never;
+    path: {
+        alias: string;
+    };
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/{alias}/enabled/locked';
+};
+
+export type GetEnabledLockedErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetEnabledLockedResponses = {
+    /**
+     * OK
+     */
+    200: boolean;
+};
+
+export type GetEnabledLockedResponse = GetEnabledLockedResponses[keyof GetEnabledLockedResponses];
 
 export type GetSettingsData = {
     body?: never;
@@ -89,6 +118,10 @@ export type SaveSettingsErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * Conflict
+     */
+    409: unknown;
 };
 
 export type SaveSettingsResponses = {
@@ -97,6 +130,31 @@ export type SaveSettingsResponses = {
      */
     200: unknown;
 };
+
+export type GetSettingsLockedData = {
+    body?: never;
+    path: {
+        alias: string;
+    };
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/{alias}/settings/locked';
+};
+
+export type GetSettingsLockedErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetSettingsLockedResponses = {
+    /**
+     * OK
+     */
+    200: boolean;
+};
+
+export type GetSettingsLockedResponse = GetSettingsLockedResponses[keyof GetSettingsLockedResponses];
 
 export type GetBackupData = {
     body?: never;

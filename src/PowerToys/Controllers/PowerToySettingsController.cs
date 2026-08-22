@@ -29,12 +29,25 @@ namespace PowerToys.Controllers
             return json is null ? null : JsonDocument.Parse(json).RootElement;
         }
 
+        [HttpGet("{alias}/settings/locked")]
+        [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+        public bool GetSettingsLocked(string alias) => _powerToyService.IsSettingsLocked(alias);
+
         [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         [HttpPut("{alias}/settings")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult SaveSettings(string alias, [FromBody] JsonElement settings)
         {
-            _powerToyService.SaveSettings(alias, settings.GetRawText());
+            try
+            {
+                _powerToyService.SaveSettings(alias, settings.GetRawText());
+            }
+            catch (PowerToySettingsLockedException ex)
+            {
+                return Conflict(ex.Message);
+            }
+
             return Ok();
         }
     }
