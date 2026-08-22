@@ -65,10 +65,10 @@ export class PowerToysModalElement extends UmbModalBaseElement<PowerToyModalData
     return html`
       <umb-body-layout headline=${this.data?.manifest.meta.label ?? ""}>
         ${this._settingsLocked
-          ? html`<uui-box class="locked-notice">
+          ? html`<div class="locked-notice">
               <uui-icon name="icon-lock"></uui-icon>
               These settings are managed via appsettings.json and can't be changed here.
-            </uui-box>`
+            </div>`
           : ""}
         ${this._content}
         <div slot="actions">
@@ -94,7 +94,11 @@ export class PowerToysModalElement extends UmbModalBaseElement<PowerToyModalData
         align-items: center;
         gap: var(--uui-size-space-3);
         margin-bottom: var(--uui-size-space-4);
-        color: var(--uui-color-text-alt);
+        padding: var(--uui-size-space-4) var(--uui-size-space-5);
+        background-color: var(--uui-color-warning);
+        color: var(--uui-color-warning-contrast);
+        border: 1px solid var(--uui-color-warning-standalone);
+        border-radius: var(--uui-border-radius);
       }
     `,
   ];
