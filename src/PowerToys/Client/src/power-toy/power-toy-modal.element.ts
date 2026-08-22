@@ -79,8 +79,8 @@ export class PowerToysModalElement extends UmbModalBaseElement<PowerToyModalData
                 look="primary"
                 color="positive"
                 ?disabled=${this._settingsLocked}
-                @click=${this.#onSave}>
-              </uui-button>`
+                @click=${this.#onSave}
+              ></uui-button>`
             : ""}
         </div>
       </umb-body-layout>
