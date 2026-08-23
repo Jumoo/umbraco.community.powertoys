@@ -10,7 +10,7 @@ A dashboard in the Umbraco Settings section that collects small backoffice admin
 against a `powerToy` backoffice extension type, so both this package and other packages can
 add tools to the same dashboard without touching Power Toys' own code.
 
-<!-- TODO: screenshot - the Power Toys dashboard overview in Umbraco settings, showing multiple enabled toys -->
+![The Power Toys dashboard in the Umbraco Settings section](screenshots/dashboard.png)
 
 ## Getting started
 

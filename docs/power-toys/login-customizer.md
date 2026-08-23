@@ -7,7 +7,7 @@ layout: default
 
 Customize the backoffice login screen's images and password reset option.
 
-<!-- TODO: screenshot - the Login Customizer settings modal -->
+![The Login Customizer settings modal](../screenshots/login-customizer-modal.png)
 
 Open the tool's settings from its card on the Power Toys dashboard.
 

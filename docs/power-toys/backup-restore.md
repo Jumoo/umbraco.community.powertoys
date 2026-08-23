@@ -8,7 +8,7 @@ layout: default
 Downloads every power toy's enabled flag and settings as one JSON file, or restores them from a
 file produced by that download.
 
-<!-- TODO: screenshot - the Backup / Restore dashboard, showing the Download backup and Restore backup sections -->
+![The Backup / Restore dashboard, showing the Download backup and Restore backup sections](../screenshots/backup-restore-modal.png)
 
 Use **Download backup** to save the current settings for every power toy to a single JSON file.
 

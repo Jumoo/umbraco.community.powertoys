@@ -7,12 +7,12 @@ layout: default
 
 Customize the backoffice logo.
 
-<!-- TODO: screenshot - the Logo Changer settings modal -->
+![The Logo Changer settings modal](../screenshots/logo-changer-modal.png)
 
 Open the tool's settings from its card on the Power Toys dashboard.
 
 **Changes require a site restart to take effect.**
 
-<!-- TODO: screenshot - the backoffice showing the custom logo -->
+![The backoffice header showing the custom logo](../screenshots/logo-changer-header.png)
 
 [Back to overview](../index.html)

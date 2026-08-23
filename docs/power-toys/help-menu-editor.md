@@ -7,11 +7,11 @@ layout: default
 
 Hide built-in help menu links, add your own, or disable the help menu completely.
 
-<!-- TODO: screenshot - the Help Menu Editor settings modal -->
+![The Help Menu Editor settings modal](../screenshots/help-menu-modal.png)
 
 Open the tool's settings from its card on the Power Toys dashboard. Use "Add link" to add a
 custom entry to the backoffice help menu.
 
-<!-- TODO: screenshot - the resulting customized help menu in the backoffice header -->
+![The resulting customized help menu in the backoffice header](../screenshots/help-menu-header.png)
 
 [Back to overview](../index.html)
