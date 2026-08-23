@@ -71,8 +71,11 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
     this._pendingOrder = fullOrder.map((alias) => (sectionAliases.has(alias) ? sectionOrder[cursor++] : alias));
   };
 
-  #onResetOrder = () => {
-    this._pendingOrder = [];
+  // Clears the custom order for just this section's dashboards, leaving every other section's
+  // saved order untouched.
+  #onResetSectionOrder = (dashboards: ManifestDashboard[]) => {
+    const aliases = new Set(dashboards.map((dashboard) => dashboard.alias));
+    this._pendingOrder = this._pendingOrder.filter((alias) => !aliases.has(alias));
   };
 
   // Dashboard labels/section labels can be either plain text or a legacy "#term" reference -
@@ -127,13 +130,15 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
       return html`<p>No dashboards are currently registered.</p>`;
     }
     return html`
-      <div class="intro">
-        <p>Turn dashboards on and off, and drag to reorder them within each section - hidden ones stay listed here so you can bring them back.</p>
-        <uui-button compact label="Reset order" @click=${this.#onResetOrder}>Reset order</uui-button>
-      </div>
+      <p>Turn dashboards on and off, and drag to reorder them within each section - hidden ones stay listed here so you can bring them back.</p>
       ${this.#groupedSections().map(
         (group) => html`
-          <h5>${group.section ?? "No section"}</h5>
+          <div class="section-heading">
+            <h5>${group.section ?? "No section"}</h5>
+            <uui-button compact label="Reset order" @click=${() => this.#onResetSectionOrder(group.dashboards)}
+              >Reset order</uui-button
+            >
+          </div>
           <power-toys-dashboard-manager-section
             .dashboards=${group.dashboards}
             .pendingRemoved=${this._pendingRemoved}
@@ -148,19 +153,20 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
 
   static styles = [
     css`
-      .intro {
+      .section-heading {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
         gap: var(--uui-size-space-4);
-      }
-
-      h5 {
         margin: var(--uui-size-space-4) 0 var(--uui-size-space-2);
       }
 
-      h5:first-child {
+      .section-heading:first-of-type {
         margin-top: 0;
+      }
+
+      h5 {
+        margin: 0;
       }
     `,
   ];
