@@ -13,6 +13,6 @@ Open the tool's settings from its card on the Power Toys dashboard.
 
 **Changes require a site restart to take effect.**
 
-<!-- TODO: screenshot - a customized backoffice login screen -->
+![A customized backoffice login screen, with a custom background image, logo, and greeting](../screenshots/login-screen.png)
 
 [Back to overview](../index.html)
