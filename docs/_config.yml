@@ -5,5 +5,5 @@ description: >-
 theme: jekyll-theme-cayman
 markdown: kramdown
 show_downloads: false
-url: "https://jumoo.github.io"
-baseurl: "/umbraco.community.powertoys"
+url: "https://powertoys.jumoo.co.uk"
+baseurl: ""
