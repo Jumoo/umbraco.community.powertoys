@@ -227,6 +227,29 @@ export type GetEnvironmentNameResponses = {
 
 export type GetEnvironmentNameResponse = GetEnvironmentNameResponses[keyof GetEnvironmentNameResponses];
 
+export type GetVersionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/umbraco/powertoys/api/v1/version';
+};
+
+export type GetVersionErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetVersionResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetVersionResponse = GetVersionResponses[keyof GetVersionResponses];
+
 export type GetUrlData = {
     body?: never;
     path: {

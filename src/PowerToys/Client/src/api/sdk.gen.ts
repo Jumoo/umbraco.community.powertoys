@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, GetVersionData, GetVersionErrors, GetVersionResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -147,7 +147,20 @@ export class PowerToysService {
             ...options
         });
     }
-    
+
+    public static getVersion<ThrowOnError extends boolean = false>(options?: Options<GetVersionData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetVersionResponses, GetVersionErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/version',
+            ...options
+        });
+    }
+
     public static getUrl<ThrowOnError extends boolean = false>(options: Options<GetUrlData, ThrowOnError>) {
         return (options.client ?? client).get<GetUrlResponses, GetUrlErrors, ThrowOnError>({
             security: [
