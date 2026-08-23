@@ -135,9 +135,13 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
         (group) => html`
           <div class="section-heading">
             <h5>${group.section ?? "No section"}</h5>
-            <uui-button compact label="Reset order" @click=${() => this.#onResetSectionOrder(group.dashboards)}
-              >Reset order</uui-button
-            >
+            ${group.dashboards.some((dashboard) => this._pendingOrder.includes(dashboard.alias))
+              ? html`
+                  <uui-button compact label="Reset order" @click=${() => this.#onResetSectionOrder(group.dashboards)}
+                    >Reset order</uui-button
+                  >
+                `
+              : ""}
           </div>
           <power-toys-dashboard-manager-section
             .dashboards=${group.dashboards}
