@@ -11,7 +11,8 @@ export const manifests: Array<UmbExtensionManifest> = [
     weight: 500,
     meta: {
       label: "Dashboard Manager",
-      description: "Lists the installed dashboards and lets you hide (or bring back) individual ones.",
+      description:
+        "Lists the installed dashboards, lets you hide (or bring back) individual ones, and drag to reorder them within each section.",
       icon: "icon-dashboard",
       modal: {
         element: () => import("./dashboard-manager-modal.element.js"),

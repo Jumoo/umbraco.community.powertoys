@@ -7,10 +7,17 @@ import type { ManifestPowerToy } from "../power-toy.extension.js";
 import type { UmbPowerToyElement } from "../power-toy-element.interface.js";
 import { POWER_TOYS_DASHBOARD_ALIAS } from "../../dashboards/manifest.js";
 import { DASHBOARD_MANAGER_CONTEXT, type DashboardManagerContext } from "./dashboard-manager.context.js";
+import "./dashboard-manager-section.element.js";
+
+interface DashboardManagerSectionGroup {
+  section: string | undefined;
+  dashboards: ManifestDashboard[];
+}
 
 // Loaded into the shared power-toys-modal - lists every dashboard ever seen (the baseline,
-// which survives unregistering) with a toggle per row, and keeps pending changes local until
-// the modal's Save button calls save(), which is when they're persisted and applied.
+// which survives unregistering) grouped by section, each with a toggle and a drag handle so
+// order can be customised per section. Pending changes are kept local until the modal's Save
+// button calls save(), which is when they're persisted and applied.
 @customElement("power-toys-dashboard-manager-modal")
 export class DashboardManagerModalElement extends UmbElementMixin(LitElement) implements UmbPowerToyElement {
   @property({ attribute: false })
@@ -22,6 +29,9 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
   @state()
   private _pendingRemoved: string[] = [];
 
+  @state()
+  private _pendingOrder: string[] = [];
+
   #context?: DashboardManagerContext;
 
   constructor() {
@@ -30,19 +40,19 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
       this.#context = context;
       if (!context) return;
       this.observe(context.observeAvailableDashboards(), (dashboards) => {
-        this._dashboards = [...dashboards].sort((a, b) => {
-          const section = (this.#sectionLabel(a) ?? "").localeCompare(this.#sectionLabel(b) ?? "");
-          return section !== 0 ? section : this.#label(a).localeCompare(this.#label(b));
-        });
+        this._dashboards = dashboards;
       });
       this.observe(context.observeRemovedAliases(), (removed) => {
         this._pendingRemoved = removed;
+      });
+      this.observe(context.observeOrder(), (order) => {
+        this._pendingOrder = order;
       });
     });
   }
 
   async save(): Promise<void> {
-    await this.#context?.save(this._pendingRemoved);
+    await this.#context?.save(this._pendingRemoved, this._pendingOrder);
   }
 
   #onToggle = (alias: string, visible: boolean) => {
@@ -50,6 +60,22 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
     this._pendingRemoved = visible
       ? this._pendingRemoved.filter((a) => a !== alias)
       : [...this._pendingRemoved, alias];
+  };
+
+  // Merges in just this section's new order, leaving any other section's pending order (or lack
+  // of one) untouched - sections never compete against each other for weight, so only a
+  // dashboard's position relative to others in its own section matters.
+  #onSectionSorted = (sectionOrder: string[]) => {
+    const sectionAliases = new Set(sectionOrder);
+    const otherAliases = this._pendingOrder.filter((alias) => !sectionAliases.has(alias));
+    this._pendingOrder = [...otherAliases, ...sectionOrder];
+  };
+
+  // Clears the custom order for just this section's dashboards, leaving every other section's
+  // saved order untouched.
+  #onResetSectionOrder = (dashboards: ManifestDashboard[]) => {
+    const aliases = new Set(dashboards.map((dashboard) => dashboard.alias));
+    this._pendingOrder = this._pendingOrder.filter((alias) => !aliases.has(alias));
   };
 
   // Dashboard labels/section labels can be either plain text or a legacy "#term" reference -
@@ -69,54 +95,82 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
     return this.localize.string(section?.meta.label ?? sectionAlias);
   }
 
+  // Groups dashboards by section, ordered by the pending custom order first. Anything not yet
+  // customised (which, before the first save, is everything) falls back to registered weight,
+  // descending - the same key the extension registry itself sorts by - so the modal's default
+  // listing actually matches what's on screen instead of just alphabetising it.
+  #groupedSections(): DashboardManagerSectionGroup[] {
+    const orderIndex = (dashboard: ManifestDashboard) => {
+      const index = this._pendingOrder.indexOf(dashboard.alias);
+      return index === -1 ? this._pendingOrder.length : index;
+    };
+
+    const sorted = [...this._dashboards].sort((a, b) => {
+      const sectionCompare = (this.#sectionLabel(a) ?? "").localeCompare(this.#sectionLabel(b) ?? "");
+      if (sectionCompare !== 0) return sectionCompare;
+      return (
+        orderIndex(a) - orderIndex(b) ||
+        (b.weight ?? 0) - (a.weight ?? 0) ||
+        this.#label(a).localeCompare(this.#label(b))
+      );
+    });
+
+    const groups: DashboardManagerSectionGroup[] = [];
+    for (const dashboard of sorted) {
+      const section = this.#sectionLabel(dashboard);
+      const group = groups[groups.length - 1];
+      if (group?.section === section) group.dashboards.push(dashboard);
+      else groups.push({ section, dashboards: [dashboard] });
+    }
+    return groups;
+  }
+
   render() {
     if (!this._dashboards.length) {
       return html`<p>No dashboards are currently registered.</p>`;
     }
-    let previousSection: string | undefined;
     return html`
-      <p>Turn dashboards on and off - hidden ones stay listed here so you can bring them back.</p>
-      <uui-ref-list>
-        ${this._dashboards.map((dashboard) => {
-          const visible = !this._pendingRemoved.includes(dashboard.alias);
-          const locked = dashboard.alias === POWER_TOYS_DASHBOARD_ALIAS;
-          const section = this.#sectionLabel(dashboard);
-          const heading = section !== previousSection ? html`<h5>${section ?? "No section"}</h5>` : "";
-          previousSection = section;
-          return html`
-            ${heading}
-            <uui-ref-node
-              class=${visible ? "" : "removed"}
-              .name=${this.#label(dashboard)}
-              .detail=${dashboard.alias}>
-              <uui-toggle
-                slot="actions"
-                label="Show this dashboard"
-                label-position="left"
-                ?disabled=${locked}
-                title=${locked ? "The Power Toys dashboard can't be hidden." : ""}
-                .checked=${visible}
-                @change=${(e: Event) => this.#onToggle(dashboard.alias, (e.target as HTMLInputElement).checked)}>
-              </uui-toggle>
-            </uui-ref-node>
-          `;
-        })}
-      </uui-ref-list>
+      <p>Turn dashboards on and off, and drag to reorder them within each section - hidden ones stay listed here so you can bring them back.</p>
+      ${this.#groupedSections().map(
+        (group) => html`
+          <div class="section-heading">
+            <h5>${group.section ?? "No section"}</h5>
+            ${group.dashboards.some((dashboard) => this._pendingOrder.includes(dashboard.alias))
+              ? html`
+                  <uui-button compact label="Reset order" @click=${() => this.#onResetSectionOrder(group.dashboards)}
+                    >Reset order</uui-button
+                  >
+                `
+              : ""}
+          </div>
+          <power-toys-dashboard-manager-section
+            .dashboards=${group.dashboards}
+            .pendingRemoved=${this._pendingRemoved}
+            @dashboards-sorted=${(e: CustomEvent<string[]>) => this.#onSectionSorted(e.detail)}
+            @dashboard-toggled=${(e: CustomEvent<{ alias: string; visible: boolean }>) =>
+              this.#onToggle(e.detail.alias, e.detail.visible)}>
+          </power-toys-dashboard-manager-section>
+        `,
+      )}
     `;
   }
 
   static styles = [
     css`
-      uui-ref-node.removed {
-        opacity: 0.5;
-      }
-
-      h5 {
+      .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--uui-size-space-4);
         margin: var(--uui-size-space-4) 0 var(--uui-size-space-2);
       }
 
-      h5:first-child {
+      .section-heading:first-of-type {
         margin-top: 0;
+      }
+
+      h5 {
+        margin: 0;
       }
     `,
   ];
