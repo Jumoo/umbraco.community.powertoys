@@ -1,0 +1,9 @@
+title: Power Toys for Umbraco
+description: >-
+  A dashboard in the Umbraco Settings section that collects small backoffice
+  admin tools ("power toys") in one place, each with its own on/off switch.
+theme: jekyll-theme-cayman
+markdown: kramdown
+show_downloads: false
+url: "https://powertoys.jumoo.co.uk"
+baseurl: ""
