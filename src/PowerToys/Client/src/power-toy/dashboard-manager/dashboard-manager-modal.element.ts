@@ -92,9 +92,10 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
     return this.localize.string(section?.meta.label ?? sectionAlias);
   }
 
-  // Groups dashboards by section, ordered by the pending custom order first (falling back to
-  // label order for anything not yet customised) - this is the one place that decides "what does
-  // the full display order look like right now", so sorting a section splices into its result.
+  // Groups dashboards by section, ordered by the pending custom order first. Anything not yet
+  // customised (which, before the first save, is everything) falls back to registered weight,
+  // descending - the same key the extension registry itself sorts by - so the modal's default
+  // listing actually matches what's on screen instead of just alphabetising it.
   #groupedSections(): DashboardManagerSectionGroup[] {
     const orderIndex = (dashboard: ManifestDashboard) => {
       const index = this._pendingOrder.indexOf(dashboard.alias);
@@ -104,7 +105,11 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
     const sorted = [...this._dashboards].sort((a, b) => {
       const sectionCompare = (this.#sectionLabel(a) ?? "").localeCompare(this.#sectionLabel(b) ?? "");
       if (sectionCompare !== 0) return sectionCompare;
-      return orderIndex(a) - orderIndex(b) || this.#label(a).localeCompare(this.#label(b));
+      return (
+        orderIndex(a) - orderIndex(b) ||
+        (b.weight ?? 0) - (a.weight ?? 0) ||
+        this.#label(a).localeCompare(this.#label(b))
+      );
     });
 
     const groups: DashboardManagerSectionGroup[] = [];
