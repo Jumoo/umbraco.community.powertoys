@@ -42,6 +42,13 @@ export class DashboardManagerContext extends UmbContextBase {
   // instantly reversible either way. Same shape as ThemeMakerContext/HelpMenuEditorContext.
   #enabled = true;
 
+  // Guards against re-entrancy: unregister()/register() below both synchronously push a new
+  // value through the registry's extensions state, which re-notifies our own byType("dashboard")
+  // subscription before the pair has finished - without this, that nested call would re-register
+  // the alias we're mid-way through moving, and our own register() call would then find it
+  // already there and log "already registered".
+  #applying = false;
+
   constructor(host: UmbControllerHost) {
     super(host, DASHBOARD_MANAGER_CONTEXT);
 
@@ -92,26 +99,33 @@ export class DashboardManagerContext extends UmbContextBase {
   // when a dashboard's visibility or weight actually needs to change, so this doesn't loop forever
   // reacting to its own registry writes.
   #applyState() {
-    const effectiveRemoved = this.#enabled ? this.#removed.getValue() ?? [] : [];
-    const effectiveOrder = this.#enabled ? this.#order.getValue() ?? [] : [];
+    if (this.#applying) return;
+    this.#applying = true;
 
-    this.#baseline.getValue()?.forEach((manifest) => {
-      const shouldBeHidden = effectiveRemoved.includes(manifest.alias);
-      const current = umbExtensionsRegistry.getByAlias<ManifestDashboard>(manifest.alias);
+    try {
+      const effectiveRemoved = this.#enabled ? this.#removed.getValue() ?? [] : [];
+      const effectiveOrder = this.#enabled ? this.#order.getValue() ?? [] : [];
 
-      if (shouldBeHidden) {
-        if (current) umbExtensionsRegistry.unregister(manifest.alias);
-        return;
-      }
+      this.#baseline.getValue()?.forEach((manifest) => {
+        const shouldBeHidden = effectiveRemoved.includes(manifest.alias);
+        const current = umbExtensionsRegistry.getByAlias<ManifestDashboard>(manifest.alias);
 
-      const desiredWeight = this.#weightFor(manifest, effectiveOrder);
-      if (!current) {
-        umbExtensionsRegistry.register(desiredWeight === manifest.weight ? manifest : { ...manifest, weight: desiredWeight });
-      } else if (current.weight !== desiredWeight) {
-        umbExtensionsRegistry.unregister(manifest.alias);
-        umbExtensionsRegistry.register({ ...manifest, weight: desiredWeight });
-      }
-    });
+        if (shouldBeHidden) {
+          if (current) umbExtensionsRegistry.unregister(manifest.alias);
+          return;
+        }
+
+        const desiredWeight = this.#weightFor(manifest, effectiveOrder);
+        if (!current) {
+          umbExtensionsRegistry.register(desiredWeight === manifest.weight ? manifest : { ...manifest, weight: desiredWeight });
+        } else if (current.weight !== desiredWeight) {
+          umbExtensionsRegistry.unregister(manifest.alias);
+          umbExtensionsRegistry.register({ ...manifest, weight: desiredWeight });
+        }
+      });
+    } finally {
+      this.#applying = false;
+    }
   }
 
   observeAvailableDashboards(): Observable<ManifestDashboard[]> {
