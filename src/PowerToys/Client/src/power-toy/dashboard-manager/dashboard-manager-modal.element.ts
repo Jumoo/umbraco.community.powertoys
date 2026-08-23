@@ -62,13 +62,13 @@ export class DashboardManagerModalElement extends UmbElementMixin(LitElement) im
       : [...this._pendingRemoved, alias];
   };
 
-  // Replaces just the reordered section's run of aliases within the full display order, leaving
-  // every other section's aliases exactly where they already were.
+  // Merges in just this section's new order, leaving any other section's pending order (or lack
+  // of one) untouched - sections never compete against each other for weight, so only a
+  // dashboard's position relative to others in its own section matters.
   #onSectionSorted = (sectionOrder: string[]) => {
-    const fullOrder = this.#groupedSections().flatMap((group) => group.dashboards.map((d) => d.alias));
     const sectionAliases = new Set(sectionOrder);
-    let cursor = 0;
-    this._pendingOrder = fullOrder.map((alias) => (sectionAliases.has(alias) ? sectionOrder[cursor++] : alias));
+    const otherAliases = this._pendingOrder.filter((alias) => !sectionAliases.has(alias));
+    this._pendingOrder = [...otherAliases, ...sectionOrder];
   };
 
   // Clears the custom order for just this section's dashboards, leaving every other section's
