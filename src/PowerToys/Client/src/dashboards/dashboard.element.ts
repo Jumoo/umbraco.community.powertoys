@@ -3,6 +3,7 @@ import {
   css,
   html,
   customElement,
+  state,
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
@@ -11,6 +12,7 @@ import type { ManifestPowerToy } from "../power-toy/power-toy.extension.js";
 import "../power-toy/power-toy-card.element.js";
 import "../power-toy/power-toy-default-body.element.js";
 import { BACKUP_RESTORE_MODAL } from "./backup-restore/backup-restore-modal.token.js";
+import { UMB_POWER_TOY_CONTEXT } from "../power-toy/power-toy.context.js";
 
 @customElement("power-toys-dashboard")
 export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
@@ -19,10 +21,18 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
 
   #modalManager?: typeof UMB_MODAL_MANAGER_CONTEXT.TYPE;
 
+  @state()
+  private _version?: string | null;
+
   constructor() {
     super();
     this.consumeContext(UMB_MODAL_MANAGER_CONTEXT, (context) => {
       this.#modalManager = context;
+    });
+    this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
+      context?.getVersion().then((version) => {
+        this._version = version;
+      });
     });
   }
 
@@ -49,7 +59,7 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
               </p>
               <div id="links">
                 <a
-                  href="https://github.com/jumoo/umbraco.community.powertoys/wiki"
+                  href="https://powertoys.jumoo.co.uk"
                   target="_blank"
                   rel="noopener"
                 >
@@ -92,6 +102,10 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
             </uui-box>
           </umb-extension-slot>
         </div>
+
+        ${this._version
+          ? html`<span slot="footer-info" id="version">Power Toys v${this._version}</span>`
+          : ""}
 
         <uui-button
           slot="actions"
@@ -143,6 +157,13 @@ export class PowerToysDashboardElement extends UmbElementMixin(LitElement) {
         display: grid;
         gap: var(--uui-size-layout-1);
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+
+      #version {
+        display: inline-block;
+        padding-left: var(--uui-size-space-4);
+        color: var(--uui-color-disabled-contrast);
+        font-size: var(--uui-type-small-size);
       }
     `,
   ];

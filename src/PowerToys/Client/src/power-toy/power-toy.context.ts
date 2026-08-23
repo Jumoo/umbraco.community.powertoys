@@ -83,6 +83,10 @@ export class UmbPowerToyContext extends UmbContextBase {
     return this.#repository.getEnvironmentName();
   }
 
+  getVersion(): Promise<string | null> {
+    return this.#repository.getVersion();
+  }
+
   /** Whether the settings are fixed by an appsettings.json override. */
   isSettingsLocked(alias: string): Promise<boolean> {
     return this.#repository.isSettingsLocked(alias);

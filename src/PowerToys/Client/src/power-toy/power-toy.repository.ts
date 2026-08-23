@@ -47,6 +47,15 @@ export class UmbPowerToyRepository extends UmbControllerBase {
       return null;
     }
   }
+
+  async getVersion(): Promise<string | null> {
+    try {
+      const { data } = await PowerToysService.getVersion();
+      return data ?? null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export default UmbPowerToyRepository;
