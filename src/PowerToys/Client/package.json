@@ -9,12 +9,12 @@
     "generate-client": "node scripts/generate-openapi.js https://localhost:44377/umbraco/swagger/powertoys/swagger.json"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.85.2",
+    "@hey-api/openapi-ts": "^0.99.0",
     "@umbraco-cms/backoffice": "^17.6.2",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "cross-env": "^10.1.0",
     "node-fetch": "^3.3.2",
     "typescript": "^5.9.3",
-    "vite": "^8.2.1"
+    "vite": "^8.3.1"
   }
 }
