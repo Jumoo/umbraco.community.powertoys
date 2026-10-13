@@ -16,5 +16,9 @@
     "node-fetch": "^3.3.2",
     "typescript": "^5.9.3",
     "vite": "^8.3.4"
+  },
+  "overrides": {
+    "handlebars": "^4.7.10",
+    "dompurify": "^3.4.17"
   }
 }
