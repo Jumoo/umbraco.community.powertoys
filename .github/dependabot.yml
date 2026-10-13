@@ -18,6 +18,11 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "@umbraco-cms/*"
+      # TypeScript is pinned to v5 until hey-api supports v7.
+      - dependency-name: "typescript"
+        versions: [">=6"]
+      # hey-api generates the API client; 0.x minors are breaking, so upgrade by hand.
+      - dependency-name: "@hey-api/*"
     groups:
       minor-and-patch:
         update-types:
