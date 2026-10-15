@@ -4,6 +4,9 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- BackChat power toy: a header icon opens a sidebar to chat with everyone, about the page you're
+  on, or in direct and group conversations, with @mentions, messages that need confirming and
+  content activity lines. Brought over from the unreleased BackChat package (#60).
 - Allow use of the dotnet environmentName as well as URL matching for environment-indicator
 - Drag-and-drop reordering of environments in the Environment Indicator settings
 - Power toy settings (and the enabled flag) can now be locked to a value set in
