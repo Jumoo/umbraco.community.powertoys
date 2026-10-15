@@ -17,6 +17,11 @@ const PANELS: Record<PowerToysPanelName, { tag: string; alias: string; load: () 
     alias: "PowerToys.PowerToy.Tasks",
     load: () => import("../../tasks/panel/tasks-panel.element.js"),
   },
+  shortcuts: {
+    tag: "power-toys-shortcuts-panel",
+    alias: "PowerToys.PowerToy.KeyboardShortcuts",
+    load: () => import("../../shortcuts/panel/shortcuts-panel.element.js"),
+  },
 };
 
 /**
@@ -92,6 +97,8 @@ export class PowerToysDockPanelElement extends UmbLitElement {
         return html`<power-toys-chat-panel></power-toys-chat-panel>`;
       case "tasks":
         return html`<power-toys-tasks-panel></power-toys-tasks-panel>`;
+      case "shortcuts":
+        return html`<power-toys-shortcuts-panel></power-toys-shortcuts-panel>`;
       default:
         return nothing;
     }
