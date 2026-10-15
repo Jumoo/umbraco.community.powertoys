@@ -1,4 +1,4 @@
-import { css, customElement, html, property, query, repeat, state } from "@umbraco-cms/backoffice/external/lit";
+import { css, customElement, html, property, repeat, state } from "@umbraco-cms/backoffice/external/lit";
 import type { PropertyValues } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UMB_CURRENT_USER_CONTEXT } from "@umbraco-cms/backoffice/current-user";
@@ -19,9 +19,6 @@ export class ChatChatMessagesElement extends UmbLitElement {
 
   @state()
   private _currentUserKey?: string;
-
-  @query(".messages")
-  private _messagesElement?: HTMLElement;
 
   #context?: ChatContext;
 
@@ -71,13 +68,6 @@ export class ChatChatMessagesElement extends UmbLitElement {
     if (changed.has("channel")) this.#observeChannel();
   }
 
-  override updated(changed: PropertyValues) {
-    // Keep the newest message in view
-    if (changed.has("_messages") && this._messagesElement) {
-      this._messagesElement.scrollTop = this._messagesElement.scrollHeight;
-    }
-  }
-
   #observeChannel() {
     if (!this.#context || !this.channel) return;
 
@@ -110,16 +100,18 @@ export class ChatChatMessagesElement extends UmbLitElement {
     return html`
       <div class="layout">
         <div class="messages">
-          ${this._messages.length === 0
-            ? html`<p class="empty">${this.localize.term("powerToysChat_empty")}</p>`
-            : repeat(
-                this._messages,
-                (m) => m.key,
-                (m) => html`<power-toys-chat-bubble
-                  .message=${m}
-                  .isCurrentUser=${m.type !== "activity" && !!m.userKey && m.userKey === this._currentUserKey}
-                ></power-toys-chat-bubble>`
-              )}
+          <div class="list">
+            ${this._messages.length === 0
+              ? html`<p class="empty">${this.localize.term("powerToysChat_empty")}</p>`
+              : repeat(
+                  this._messages,
+                  (m) => m.key,
+                  (m) => html`<power-toys-chat-bubble
+                    .message=${m}
+                    .isCurrentUser=${m.type !== "activity" && !!m.userKey && m.userKey === this._currentUserKey}
+                  ></power-toys-chat-bubble>`
+                )}
+          </div>
         </div>
         <power-toys-chat-input-box class="composer" .channel=${this.channel}></power-toys-chat-input-box>
       </div>
@@ -138,15 +130,23 @@ export class ChatChatMessagesElement extends UmbLitElement {
       height: 100%;
     }
 
-    /* Padded inside the scrolling area, so the scrollbar sits flush with the edge */
+    /* Padded inside the scrolling area, so the scrollbar sits flush with the edge. Reversed,
+       so the browser opens it at the newest message and keeps it there as messages arrive,
+       unless the user has scrolled up to read back. */
     .messages {
       flex: 1 1 0;
       min-height: 0;
       overflow-y: auto;
       display: flex;
+      flex-direction: column-reverse;
+      padding: var(--uui-size-layout-1);
+    }
+
+    .list {
+      flex: 1 0 auto;
+      display: flex;
       flex-direction: column;
       gap: var(--uui-size-space-4);
-      padding: var(--uui-size-layout-1);
     }
 
     /* The line above runs full width; the box and buttons keep their space from the sides */
