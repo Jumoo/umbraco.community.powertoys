@@ -7,11 +7,11 @@ export const manifests: Array<UmbExtensionManifest> = [
   {
     type: "powerToy",
     alias: CHAT_POWER_TOY_ALIAS,
-    name: "Chat Power Toy",
+    name: "BackChat Power Toy",
     // Below Logo Changer (50), the last of the existing power toys
     weight: 10,
     meta: {
-      label: "Chat",
+      label: "BackChat",
       description: "Chat with other editors, everyone at once or about the page you're on, from the backoffice header.",
       icon: "icon-chat",
       modal: {

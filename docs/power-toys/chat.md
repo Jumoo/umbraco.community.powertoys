@@ -1,9 +1,9 @@
 ---
-title: Chat
+title: BackChat
 layout: default
 ---
 
-# Chat
+# BackChat
 
 Chat with other editors from the backoffice header: everyone at once, about the page you have
 open, or in a direct or group conversation.
