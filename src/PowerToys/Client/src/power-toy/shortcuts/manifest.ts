@@ -49,6 +49,13 @@ export const manifests: Array<UmbExtensionManifest> = [
     },
     conditions: [enabled],
   },
+  // The sidebar for adding or editing one custom shortcut, opened from the settings
+  {
+    type: "modal",
+    alias: "PowerToys.Modal.KeyboardShortcuts.Editor",
+    name: "Keyboard Shortcuts Editor Modal",
+    element: () => import("./settings/shortcut-editor-modal.element.js"),
+  },
   {
     type: "localization",
     alias: "PowerToys.Shortcuts.Localization.EnUs",

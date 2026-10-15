@@ -26,7 +26,7 @@ On a Mac the panel shows ⌘ instead of Ctrl, to match how Umbraco reads the key
 Admins can add shortcuts for everyone on the site from the Keyboard Shortcuts card's settings.
 Each one is a key combination, something to do, and an optional label for the panel.
 
-![The Keyboard Shortcuts settings, adding Alt+M to run the Rollback entity action](../screenshots/keyboard-shortcuts-custom.jpg)
+![The Keyboard Shortcuts settings, with the Edit shortcut sidebar open on Alt+R, which runs the Rollback entity action](../screenshots/keyboard-shortcuts-custom.jpg)
 
 A shortcut can:
 
