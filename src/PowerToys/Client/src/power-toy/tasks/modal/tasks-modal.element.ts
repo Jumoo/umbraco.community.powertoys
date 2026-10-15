@@ -1,0 +1,220 @@
+import { css, customElement, html, nothing, state } from "@umbraco-cms/backoffice/external/lit";
+import { UmbModalBaseElement, UmbModalToken } from "@umbraco-cms/backoffice/modal";
+import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
+import { UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN } from "@umbraco-cms/backoffice/document";
+import { TasksService, type TaskResponseModel } from "../../../api/index.js";
+import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "../../shared/current-document/current-document.context.js";
+import { TASKS_CONTEXT, type TasksContext } from "../tasks.context.js";
+import { TASKS_PERMISSION_MANAGE_GLOBAL } from "../constants.js";
+import "../components/task-list.element.js";
+
+export const TASKS_MODAL = new UmbModalToken<Record<string, never>, Record<string, never>>("PowerToys.Tasks.Modal", {
+  modal: { type: "sidebar", size: "small" },
+});
+
+const ASSIGNED_PAGE_SIZE = 20;
+
+// The header's tasks sidebar: what's assigned to you, the page you're on, and the global list
+@customElement("power-toys-tasks-modal")
+export class TasksModalElement extends UmbModalBaseElement {
+  @state()
+  private _assigned: TaskResponseModel[] = [];
+
+  @state()
+  private _assignedTotal = 0;
+
+  @state()
+  private _assignedLoading = true;
+
+  @state()
+  private _currentDocument?: string;
+
+  @state()
+  private _canManageGlobal = false;
+
+  #context?: TasksContext;
+
+  constructor() {
+    super();
+
+    this.consumeContext(TASKS_CONTEXT, (context) => {
+      this.#context = context;
+      if (!context) return;
+      this.observe(context.hasPermission(TASKS_PERMISSION_MANAGE_GLOBAL), (can) => (this._canManageGlobal = can), "_canManageGlobal");
+      // A task changing anywhere can change who it's assigned to
+      this.observe(context.changes, () => this.#loadAssigned(), "_changes");
+    });
+
+    this.consumeContext(UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT, (context) => {
+      if (!context) return;
+      this.observe(context.unique, (unique) => (this._currentDocument = unique ?? undefined), "_currentDocument");
+    });
+  }
+
+  async #loadAssigned() {
+    try {
+      const { data } = await TasksService.getOpenTasks({ query: { skip: 0, take: ASSIGNED_PAGE_SIZE } });
+      this._assigned = data?.items ?? [];
+      this._assignedTotal = data?.total ?? 0;
+    } finally {
+      this._assignedLoading = false;
+    }
+  }
+
+  async #complete(task: TaskResponseModel) {
+    const { error } = await TasksService.updateTask({
+      path: { key: task.key },
+      body: { title: task.title, assigneeKey: task.assigneeKey, dueDate: task.dueDate, isComplete: true },
+    });
+
+    if (error) {
+      const notifications = await this.getContext(UMB_NOTIFICATION_CONTEXT);
+      notifications?.peek("danger", { data: { message: this.localize.term("powerToysTasks_failed") } });
+      return;
+    }
+
+    await this.#loadAssigned();
+    this.#context?.refresh();
+  }
+
+  // A document's task opens its document, where the sidebar's "This page" list has it
+  #open(task: TaskResponseModel) {
+    if (!task.documentKey) return;
+    this.modalContext?.reject();
+    window.history.pushState({}, "", UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN.generateAbsolute({ unique: task.documentKey }));
+  }
+
+  #renderAssigned() {
+    if (this._assignedLoading) return html`<uui-loader></uui-loader>`;
+
+    if (this._assigned.length === 0) {
+      return html`<p class="empty"><umb-icon name="icon-check"></umb-icon> ${this.localize.term("powerToysTasks_noneAssigned")}</p>`;
+    }
+
+    return html`
+      <uui-ref-list>
+        ${this._assigned.map((task) => {
+          const overdue = !!task.dueDate && new Date(task.dueDate) < new Date();
+          return html`<uui-ref-node
+            name=${task.title}
+            detail=${task.documentName ?? this.localize.term("powerToysTasks_global")}
+            ?readonly=${!task.documentKey}
+            @open=${() => this.#open(task)}
+          >
+            <umb-icon slot="icon" name=${task.documentKey ? "icon-document" : "icon-globe"}></umb-icon>
+            ${task.dueDate
+              ? html`<uui-tag slot="tag" look=${overdue ? "primary" : "secondary"} color=${overdue ? "danger" : "default"}
+                  ><span class="tag-content"
+                    ><umb-icon name=${overdue ? "icon-alert" : "icon-calendar"}></umb-icon>
+                    ${this.localize.date(task.dueDate, { dateStyle: "medium" })}</span
+                  ></uui-tag
+                >`
+              : nothing}
+            <uui-action-bar slot="actions">
+              <uui-button
+                label=${this.localize.term("powerToysTasks_markDone")}
+                @click=${(e: Event) => {
+                  e.stopPropagation();
+                  this.#complete(task);
+                }}
+              >
+                <uui-icon name="icon-check"></uui-icon>
+              </uui-button>
+            </uui-action-bar>
+          </uui-ref-node>`;
+        })}
+      </uui-ref-list>
+      ${this._assignedTotal > this._assigned.length
+        ? html`<p class="more">${this.localize.term("powerToysTasks_moreAssigned", this._assignedTotal - this._assigned.length)}</p>`
+        : nothing}
+    `;
+  }
+
+  override render() {
+    return html`
+      <umb-body-layout headline=${this.localize.term("powerToysTasks_tasks")}>
+        <div class="layout">
+          <uui-box>
+            <div slot="headline" class="headline">
+              <umb-icon name="icon-user"></umb-icon>
+              <span>${this.localize.term("powerToysTasks_assignedToYou")}</span>
+              ${this._assignedTotal ? html`<uui-tag look="secondary">${this._assignedTotal}</uui-tag>` : nothing}
+            </div>
+            ${this.#renderAssigned()}
+          </uui-box>
+
+          ${this._currentDocument
+            ? html`<uui-box>
+                <div slot="headline" class="headline">
+                  <umb-icon name="icon-document"></umb-icon>
+                  <span>${this.localize.term("powerToysTasks_thisPage")}</span>
+                </div>
+                <power-toys-task-list .documentKey=${this._currentDocument} editable></power-toys-task-list>
+              </uui-box>`
+            : nothing}
+
+          <uui-box>
+            <div slot="headline" class="headline">
+              <umb-icon name="icon-globe"></umb-icon>
+              <span>${this.localize.term("powerToysTasks_global")}</span>
+            </div>
+            <power-toys-task-list .documentKey=${null} ?editable=${this._canManageGlobal}></power-toys-task-list>
+          </uui-box>
+        </div>
+        <div slot="actions">
+          <uui-button label=${this.localize.term("powerToysTasks_close")} @click=${() => this.modalContext?.reject()}></uui-button>
+        </div>
+      </umb-body-layout>
+    `;
+  }
+
+  static override styles = css`
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: var(--uui-size-layout-1);
+    }
+
+    .headline {
+      display: flex;
+      align-items: center;
+      gap: var(--uui-size-space-3);
+    }
+
+    .headline umb-icon {
+      color: var(--uui-color-text-alt);
+    }
+
+    .tag-content {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--uui-size-space-1);
+      white-space: nowrap;
+    }
+
+    .empty,
+    .more {
+      display: flex;
+      align-items: center;
+      gap: var(--uui-size-space-2);
+      margin: 0;
+      color: var(--uui-color-text-alt);
+    }
+
+    .more {
+      margin-top: var(--uui-size-space-3);
+    }
+
+    .empty umb-icon {
+      color: var(--uui-color-positive-standalone);
+    }
+  `;
+}
+
+export default TasksModalElement;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "power-toys-tasks-modal": TasksModalElement;
+  }
+}

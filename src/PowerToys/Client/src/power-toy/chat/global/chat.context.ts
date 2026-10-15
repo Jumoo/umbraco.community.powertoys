@@ -1,22 +1,13 @@
 import { UmbContextBase } from "@umbraco-cms/backoffice/class-api";
 import type { UmbControllerHost } from "@umbraco-cms/backoffice/controller-api";
-import { UMB_AUTH_CONTEXT } from "@umbraco-cms/backoffice/auth";
-import { UMB_SERVER_CONTEXT } from "@umbraco-cms/backoffice/server";
 import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT } from "@umbraco-cms/backoffice/current-user";
 import { UmbLocalizationController } from "@umbraco-cms/backoffice/localization-api";
 import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
 import { UmbArrayState, UmbBooleanState, UmbObjectState, UmbStringState } from "@umbraco-cms/backoffice/observable-api";
-import {
-  HubConnectionBuilder,
-  HubConnectionState,
-  HttpTransportType,
-  type HubConnection,
-  type IHttpConnectionOptions,
-  type IRetryPolicy,
-} from "@umbraco-cms/backoffice/external/signalr";
-import { CHAT_HUB_PATH, CHAT_POWER_TOY_ALIAS } from "../constants";
-import { UMB_POWER_TOY_CONTEXT } from "../../power-toy.context.js";
+import { CHAT_POWER_TOY_ALIAS } from "../constants";
+import { UMB_POWER_TOYS_HUB_CONTEXT, type PowerToysHubContext } from "../../shared/hub/hub.context.js";
+import { PowerToyEnabledController } from "../../shared/power-toy-enabled.js";
 import type {
   ChatMessage,
   ConfirmationStatus,
@@ -29,19 +20,11 @@ import { CHAT_IMPORTANT_MODAL } from "../confirmations/important-modal.token";
 import { toPlainText } from "../mentions/mentions";
 import { CHAT_CONTEXT } from "./chat.context.token";
 
-// Keep trying with backoff (up to 30 seconds apart) rather than giving up after a few
-// attempts, so the chat comes back by itself once the server is reachable again.
-const reconnectPolicy: IRetryPolicy = {
-  nextRetryDelayInMilliseconds: (context) => Math.min(30_000, 1_000 * 2 ** context.previousRetryCount),
-};
-
-// One hub connection for the whole backoffice, shared by the header app, the global
-// modal and every document workspace. Follows the pattern of Umbraco's own server
-// event context: connect only while authorized, and use the server's SignalR settings.
+// The chat's state for the whole backoffice, shared by the header app, the sidebar and its
+// modals. Live updates come through the shared Power Toys hub connection, which this asks
+// for while the Chat power toy is on.
 export class ChatContext extends UmbContextBase {
-  #connection?: HubConnection;
-  #authContext?: typeof UMB_AUTH_CONTEXT.TYPE;
-  #serverContext?: typeof UMB_SERVER_CONTEXT.TYPE;
+  #hub?: PowerToysHubContext;
   #joined = new Set<string>();
   #localize = new UmbLocalizationController(this);
 
@@ -71,12 +54,7 @@ export class ChatContext extends UmbContextBase {
   #importantOpen?: string;
   #importantModal?: { reject: () => void };
 
-  // The saved document open in a workspace right now, for the sidebar's "This page" chat.
-  // Set by the document workspace context, cleared when the workspace closes.
-  #currentDocument = new UmbStringState(undefined);
-  public readonly currentDocument = this.#currentDocument.asObservable();
-
-  // The power toy's enabled flag. The hub only connects while it's on.
+  // The power toy's enabled flag. Nothing is sent to the hub while it's off.
   #enabled = false;
 
   // The current user's permissions, from all their groups. Used to hide what they can't do;
@@ -97,11 +75,6 @@ export class ChatContext extends UmbContextBase {
   constructor(host: UmbControllerHost) {
     super(host, CHAT_CONTEXT);
 
-    this.consumeContext(UMB_AUTH_CONTEXT, (context) => {
-      this.#authContext = context;
-      this.#observeIsAuthorized();
-    });
-
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (context) => {
       if (!context) return;
       this.observe(
@@ -113,42 +86,27 @@ export class ChatContext extends UmbContextBase {
 
     this.observe(this.pending, (pending) => this.#showImportant(pending), "_showImportant");
 
-    this.consumeContext(UMB_SERVER_CONTEXT, (context) => {
-      this.#serverContext = context;
-      this.#observeIsAuthorized();
+    this.consumeContext(UMB_POWER_TOYS_HUB_CONTEXT, (hub) => {
+      this.#hub = hub;
+      if (!hub) return;
+      this.#listen(hub);
+      this.observe(hub.isConnected, (connected) => this.#isConnected.setValue(connected && this.#enabled), "_isConnected");
+      hub.setWanted("chat", this.#enabled);
     });
 
-    // The shared enabled state starts out true until its first fetch lands, so wait for a
-    // real answer before connecting, rather than trying a hub that will turn us away
-    this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
-      if (!context) return;
-      let known = false;
-      const setEnabled = (enabled: boolean) => {
-        this.#enabled = enabled;
-        this.#observeIsAuthorized();
-      };
-      context.isEnabled(CHAT_POWER_TOY_ALIAS).then((enabled) => {
-        known = true;
-        setEnabled(enabled);
-      });
-      this.observe(
-        context.observeEnabled(CHAT_POWER_TOY_ALIAS),
-        (enabled) => {
-          if (known) setEnabled(enabled);
-        },
-        "_enabled"
-      );
+    new PowerToyEnabledController(this, CHAT_POWER_TOY_ALIAS, (enabled) => {
+      this.#enabled = enabled;
+      if (!enabled) {
+        this.#unread.setValue([]);
+        this.#pending.setValue([]);
+      }
+      this.#hub?.setWanted("chat", enabled);
     });
   }
 
-  /** The document workspace reports the document it has open, and undefined when it closes. */
-  setCurrentDocument(unique: string | undefined) {
-    this.#currentDocument.setValue(unique);
-  }
-
-  /** Clears the current document only if it's still the one given, so closing an old workspace after a new one opened doesn't clear the new one. */
-  clearCurrentDocument(unique: string) {
-    if (this.#currentDocument.getValue() === unique) this.#currentDocument.setValue(undefined);
+  // Connected, and Chat is on. The connection can be open for Tasks alone.
+  get #ready() {
+    return this.#enabled && !!this.#hub?.connected;
   }
 
   messagesOf(channel: string) {
@@ -158,10 +116,10 @@ export class ChatContext extends UmbContextBase {
   /** Loads the conversation list, and keeps it current from then on. */
   async loadConversations() {
     this.#conversationsWanted = true;
-    if (this.#connection?.state !== HubConnectionState.Connected) return;
+    if (!this.#ready) return;
 
     try {
-      this.#conversations.setValue(await this.#connection.invoke<Conversation[]>("GetConversations"));
+      this.#conversations.setValue(await this.#hub!.invoke<Conversation[]>("GetConversations"));
     } catch (error) {
       console.error("Chat: could not load conversations", error);
     }
@@ -184,11 +142,9 @@ export class ChatContext extends UmbContextBase {
   }
 
   async #invokeConversation(method: string, arg: unknown): Promise<Conversation> {
-    if (this.#connection?.state !== HubConnectionState.Connected) {
-      throw new Error("Not connected");
-    }
+    if (!this.#ready) throw new Error("Not connected");
 
-    const conversation = await this.#connection.invoke<Conversation>(method, arg);
+    const conversation = await this.#hub!.invoke<Conversation>(method, arg);
     if (!this.#conversations.getValue().some((c) => c.channel === conversation.channel)) {
       this.#conversations.appendOne(conversation);
     }
@@ -208,9 +164,9 @@ export class ChatContext extends UmbContextBase {
    * server then clears the count in every tab the user has open.
    */
   async markRead(channel: string) {
-    if (this.#connection?.state !== HubConnectionState.Connected) return;
+    if (!this.#ready) return;
 
-    await this.#connection
+    await this.#hub!
       .invoke("MarkRead", channel)
       .catch((error) => console.error(`Chat: could not mark ${channel} read`, error));
   }
@@ -219,9 +175,7 @@ export class ChatContext extends UmbContextBase {
     if (this.#joined.has(channel)) return;
     this.#joined.add(channel);
 
-    if (this.#connection?.state === HubConnectionState.Connected) {
-      this.#join(this.#connection, channel);
-    }
+    if (this.#ready) this.#join(channel);
   }
 
   /**
@@ -229,20 +183,16 @@ export class ChatContext extends UmbContextBase {
    * so the caller can keep the text and tell the user.
    */
   async sendMessage(channel: string, text: string): Promise<SendMessageResult> {
-    if (this.#connection?.state !== HubConnectionState.Connected) {
-      throw new Error("Not connected");
-    }
+    if (!this.#ready) throw new Error("Not connected");
 
-    return await this.#connection.invoke<SendMessageResult>("SendMessage", channel, text);
+    return await this.#hub!.invoke<SendMessageResult>("SendMessage", channel, text);
   }
 
   /** Sends a message each recipient must confirm. Important ones hold the screen until they do. */
   async sendAnnouncement(channel: string, text: string, important: boolean): Promise<SendMessageResult> {
-    if (this.#connection?.state !== HubConnectionState.Connected) {
-      throw new Error("Not connected");
-    }
+    if (!this.#ready) throw new Error("Not connected");
 
-    return await this.#connection.invoke<SendMessageResult>("SendAnnouncement", channel, text, important);
+    return await this.#hub!.invoke<SendMessageResult>("SendAnnouncement", channel, text, important);
   }
 
   isPending(messageKey: string) {
@@ -250,16 +200,16 @@ export class ChatContext extends UmbContextBase {
   }
 
   async confirm(messageKey: string) {
-    await this.#connection?.invoke("Confirm", messageKey);
+    await this.#hub?.invoke("Confirm", messageKey);
     this.#pending.removeOne(messageKey);
   }
 
   async getConfirmationStatus(messageKey: string) {
-    return await this.#connection!.invoke<ConfirmationStatus>("GetConfirmationStatus", messageKey);
+    return await this.#hub!.invoke<ConfirmationStatus>("GetConfirmationStatus", messageKey);
   }
 
   async remind(messageKey: string) {
-    return await this.#connection!.invoke<number>("Remind", messageKey);
+    return await this.#hub!.invoke<number>("Remind", messageKey);
   }
 
   #onConfirmationRequested(message: ChatMessage) {
@@ -313,9 +263,9 @@ export class ChatContext extends UmbContextBase {
     return this.#openChannels.has(channel) && document.visibilityState === "visible";
   }
 
-  async #loadMentionables(connection: HubConnection) {
+  async #loadMentionables() {
     try {
-      this.#mentionables.setValue(await connection.invoke<Mentionables>("GetMentionables"));
+      this.#mentionables.setValue(await this.#hub!.invoke<Mentionables>("GetMentionables"));
     } catch (error) {
       console.error("Chat: could not load users for mentions", error);
     }
@@ -333,72 +283,34 @@ export class ChatContext extends UmbContextBase {
     });
   }
 
-  #observeIsAuthorized() {
-    if (!this.#authContext || !this.#serverContext) return;
-
-    this.observe(
-      this.#authContext.isAuthorized,
-      (isAuthorized) => {
-        if (isAuthorized === undefined) return;
-
-        if (isAuthorized && this.#enabled) {
-          this.#connect();
-        } else {
-          this.#disconnect();
-        }
-      },
-      "_observeIsAuthorized"
-    );
-  }
-
-  #connect() {
-    if (this.#connection) return;
-
-    const serverUrl = this.#serverContext?.getServerUrl();
-    if (!serverUrl) return;
-
-    // Backoffice auth is cookie based, so the token value is a placeholder, as in Umbraco's own hubs
-    const options: IHttpConnectionOptions = { accessTokenFactory: () => "[redacted]" };
-
-    if (this.#serverContext?.getServerConnection()?.getSignalRSkipNegotiation()) {
-      options.skipNegotiation = true;
-      options.transport = HttpTransportType.WebSockets;
-    }
-
-    const connection = new HubConnectionBuilder()
-      .withUrl(`${serverUrl}${CHAT_HUB_PATH}`, options)
-      .withAutomaticReconnect(reconnectPolicy)
-      .build();
-
-    this.#connection = connection;
-
-    connection.on("history", (channel: string, history: ChatMessage[]) => {
+  #listen(hub: PowerToysHubContext) {
+    hub.on("history", (channel: string, history: ChatMessage[]) => {
       const others = this.#messages.getValue().filter((m) => m.channel !== channel);
       this.#messages.setValue([...others, ...history]);
     });
 
-    connection.on("chat", (message: ChatMessage) => {
+    hub.on("chat", (message: ChatMessage) => {
       this.#messages.appendOne(message);
       this.#conversations.updateOne(message.channel, { latest: message });
     });
 
-    connection.on("mention", (message: ChatMessage) => this.#onMention(message));
+    hub.on("mention", (message: ChatMessage) => this.#onMention(message));
 
-    connection.on("pendingConfirmations", (messages: ChatMessage[]) => this.#pending.setValue(messages));
-    connection.on("confirmationRequested", (message: ChatMessage) => this.#onConfirmationRequested(message));
+    hub.on("pendingConfirmations", (messages: ChatMessage[]) => this.#pending.setValue(messages));
+    hub.on("confirmationRequested", (message: ChatMessage) => this.#onConfirmationRequested(message));
     // Confirmed in another tab: close it here too
-    connection.on("confirmed", (messageKey: string) => {
+    hub.on("confirmed", (messageKey: string) => {
       this.#pending.removeOne(messageKey);
       if (this.#importantOpen === messageKey) this.#importantModal?.reject();
     });
-    connection.on("confirmationChanged", (messageKey: string) => this.#confirmationChanges.setValue(messageKey));
+    hub.on("confirmationChanged", (messageKey: string) => this.#confirmationChanges.setValue(messageKey));
 
     // The full set on connect, then one channel at a time as they change
-    connection.on("unread", (counts: UnreadCount[]) => {
+    hub.on("unread", (counts: UnreadCount[]) => {
       this.#unread.setValue(counts.filter((c) => c.unread > 0));
     });
 
-    connection.on("unreadChanged", (count: UnreadCount) => {
+    hub.on("unreadChanged", (count: UnreadCount) => {
       this.#reloadConversationsSoon();
       if (count.unread > 0) {
         this.#unread.appendOne(count);
@@ -408,52 +320,16 @@ export class ChatContext extends UmbContextBase {
     });
 
     // Group membership is per connection, so join every channel again after a reconnect
-    connection.onreconnecting(() => this.#setConnected(connection, false));
-    connection.onreconnected(() => {
-      this.#setConnected(connection, true);
-      this.#joinAll(connection);
-      this.#loadMentionables(connection);
+    hub.onConnected(() => {
+      if (!this.#enabled) return;
+      for (const channel of this.#joined) this.#join(channel);
+      this.#loadMentionables();
       this.#reloadConversationsSoon();
     });
-    connection.onclose(() => this.#setConnected(connection, false));
-
-    connection
-      .start()
-      .then(() => {
-        this.#setConnected(connection, true);
-        this.#joinAll(connection);
-        this.#loadMentionables(connection);
-        this.#reloadConversationsSoon();
-      })
-      .catch((error) => {
-        this.#setConnected(connection, false);
-        console.error("Chat: failed to connect to the chat hub", error);
-      });
   }
 
-  #disconnect() {
-    const connection = this.#connection;
-    this.#connection = undefined;
-    this.#isConnected.setValue(false);
-    this.#unread.setValue([]);
-    connection?.stop();
-  }
-
-  // A superseded connection can still report state while it shuts down; only the active one counts
-  #setConnected(connection: HubConnection, isConnected: boolean) {
-    if (this.#connection === connection) {
-      this.#isConnected.setValue(isConnected);
-    }
-  }
-
-  #joinAll(connection: HubConnection) {
-    for (const channel of this.#joined) {
-      this.#join(connection, channel);
-    }
-  }
-
-  #join(connection: HubConnection, channel: string) {
-    connection
+  #join(channel: string) {
+    this.#hub!
       .invoke("JoinChannel", channel)
       .catch((error) => console.error(`Chat: could not join channel ${channel}`, error));
   }

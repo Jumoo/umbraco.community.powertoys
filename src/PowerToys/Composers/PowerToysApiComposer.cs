@@ -13,6 +13,7 @@ using Umbraco.Cms.Infrastructure.Manifest;
 using Umbraco.Extensions;
 using PowerToys.PowerToy.Chat;
 using PowerToys.PowerToy.LoginCustomizer;
+using PowerToys.PowerToy.Tasks;
 using PowerToys.PowerToy.LogoChanger;
 using PowerToys.Services;
 using PowerToys.SignalR;
@@ -36,6 +37,8 @@ namespace PowerToys.Composers
             builder.AddPowerToysHub();
 
             builder.AddChat();
+
+            builder.AddTasks();
 
             builder.Services.Configure<SwaggerGenOptions>(opt =>
             {

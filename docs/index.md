@@ -19,6 +19,7 @@ See the [Installation](install.html) page to add the package to your site.
 ## Power toys
 
 - [BackChat](power-toys/chat.html) - chat with other editors from the backoffice header, globally or about the page you're on.
+- [Tasks](power-toys/tasks.html) - to-do lists for each page and for the whole site, from the backoffice header.
 - [Navbar Clock](power-toys/navbar-clock.html) - shows the current time in the backoffice header.
 - [Dashboard Manager](power-toys/dashboard-manager.html) - lists installed dashboards, lets you hide/reorder them.
 - [Login Customizer](power-toys/login-customizer.html) - customizes the backoffice login screen.

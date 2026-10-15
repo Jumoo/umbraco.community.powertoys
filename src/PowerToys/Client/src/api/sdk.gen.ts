@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetBackupData, GetBackupErrors, GetBackupResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, GetVersionData, GetVersionErrors, GetVersionResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses } from './types.gen';
+import type { CreateDocumentTaskData, CreateDocumentTaskErrors, CreateDocumentTaskResponses, CreateGlobalTaskData, CreateGlobalTaskErrors, CreateGlobalTaskResponses, DeleteTaskData, DeleteTaskErrors, DeleteTaskResponses, GetAssigneesData, GetAssigneesErrors, GetAssigneesResponses, GetBackupData, GetBackupErrors, GetBackupResponses, GetDocumentTasksData, GetDocumentTasksErrors, GetDocumentTasksResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetGlobalTasksData, GetGlobalTasksErrors, GetGlobalTasksResponses, GetOpenTasksData, GetOpenTasksErrors, GetOpenTasksResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, GetVersionData, GetVersionErrors, GetVersionResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses, SortDocumentTasksData, SortDocumentTasksErrors, SortDocumentTasksResponses, SortGlobalTasksData, SortGlobalTasksErrors, SortGlobalTasksResponses, UpdateTaskData, UpdateTaskErrors, UpdateTaskResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -61,7 +61,7 @@ export class PowerToysService {
             ...options
         });
     }
-
+    
     public static getSettings<ThrowOnError extends boolean = false>(options: Options<GetSettingsData, ThrowOnError>) {
         return (options.client ?? client).get<GetSettingsResponses, GetSettingsErrors, ThrowOnError>({
             security: [
@@ -104,7 +104,7 @@ export class PowerToysService {
             ...options
         });
     }
-
+    
     public static getBackup<ThrowOnError extends boolean = false>(options?: Options<GetBackupData, ThrowOnError>) {
         return (options?.client ?? client).get<GetBackupResponses, GetBackupErrors, ThrowOnError>({
             security: [
@@ -147,20 +147,7 @@ export class PowerToysService {
             ...options
         });
     }
-
-    public static getVersion<ThrowOnError extends boolean = false>(options?: Options<GetVersionData, ThrowOnError>) {
-        return (options?.client ?? client).get<GetVersionResponses, GetVersionErrors, ThrowOnError>({
-            security: [
-                {
-                    scheme: 'bearer',
-                    type: 'http'
-                }
-            ],
-            url: '/umbraco/powertoys/api/v1/version',
-            ...options
-        });
-    }
-
+    
     public static getUrl<ThrowOnError extends boolean = false>(options: Options<GetUrlData, ThrowOnError>) {
         return (options.client ?? client).get<GetUrlResponses, GetUrlErrors, ThrowOnError>({
             security: [
@@ -183,6 +170,171 @@ export class PowerToysService {
                 }
             ],
             url: '/umbraco/powertoys/api/v1/ping',
+            ...options
+        });
+    }
+    
+    public static getVersion<ThrowOnError extends boolean = false>(options?: Options<GetVersionData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetVersionResponses, GetVersionErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/version',
+            ...options
+        });
+    }
+}
+
+export class TasksService {
+    public static deleteTask<ThrowOnError extends boolean = false>(options: Options<DeleteTaskData, ThrowOnError>) {
+        return (options.client ?? client).delete<DeleteTaskResponses, DeleteTaskErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/{key}',
+            ...options
+        });
+    }
+    
+    public static updateTask<ThrowOnError extends boolean = false>(options: Options<UpdateTaskData, ThrowOnError>) {
+        return (options.client ?? client).put<UpdateTaskResponses, UpdateTaskErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/{key}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static getAssignees<ThrowOnError extends boolean = false>(options?: Options<GetAssigneesData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetAssigneesResponses, GetAssigneesErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/assignees',
+            ...options
+        });
+    }
+    
+    public static getDocumentTasks<ThrowOnError extends boolean = false>(options: Options<GetDocumentTasksData, ThrowOnError>) {
+        return (options.client ?? client).get<GetDocumentTasksResponses, GetDocumentTasksErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/document/{documentKey}',
+            ...options
+        });
+    }
+    
+    public static createDocumentTask<ThrowOnError extends boolean = false>(options: Options<CreateDocumentTaskData, ThrowOnError>) {
+        return (options.client ?? client).post<CreateDocumentTaskResponses, CreateDocumentTaskErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/document/{documentKey}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static sortDocumentTasks<ThrowOnError extends boolean = false>(options: Options<SortDocumentTasksData, ThrowOnError>) {
+        return (options.client ?? client).put<SortDocumentTasksResponses, SortDocumentTasksErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/document/{documentKey}/sort',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static getGlobalTasks<ThrowOnError extends boolean = false>(options?: Options<GetGlobalTasksData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetGlobalTasksResponses, GetGlobalTasksErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/global',
+            ...options
+        });
+    }
+    
+    public static createGlobalTask<ThrowOnError extends boolean = false>(options?: Options<CreateGlobalTaskData, ThrowOnError>) {
+        return (options?.client ?? client).post<CreateGlobalTaskResponses, CreateGlobalTaskErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/global',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers
+            }
+        });
+    }
+    
+    public static sortGlobalTasks<ThrowOnError extends boolean = false>(options?: Options<SortGlobalTasksData, ThrowOnError>) {
+        return (options?.client ?? client).put<SortGlobalTasksResponses, SortGlobalTasksErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/global/sort',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers
+            }
+        });
+    }
+    
+    public static getOpenTasks<ThrowOnError extends boolean = false>(options?: Options<GetOpenTasksData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetOpenTasksResponses, GetOpenTasksErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/tasks/open',
             ...options
         });
     }
