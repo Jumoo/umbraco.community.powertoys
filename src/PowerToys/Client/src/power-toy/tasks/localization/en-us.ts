@@ -72,7 +72,8 @@ const enUs: UmbLocalizationDictionary = {
     ruleFromPublish: "The last publish",
     ruleHint: "Existing pages of this type get the full interval from today, so nothing is overdue straight away. Dates set by hand are kept.",
     ruleSaved: "Rule saved",
-    ruleFailed: "The rule couldn't be saved. A content type can only have one rule.",
+    ruleFailed: "The rule couldn't be saved. Check the content type and the number of months (1 to 120).",
+    ruleExists: "This content type already has a rule. Edit that one instead.",
   },
   // Heading for the Tasks power toy's permissions in the user group editor
   user: {

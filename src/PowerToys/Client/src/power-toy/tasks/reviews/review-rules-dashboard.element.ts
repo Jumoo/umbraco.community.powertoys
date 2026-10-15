@@ -43,9 +43,15 @@ export class ReviewRulesDashboardElement extends UmbLitElement {
     }
   }
 
+  // A content type can only have one rule, so adding a second (or moving a rule onto a type
+  // that has one) is caught before saving
+  #clashes(draft: RuleDraft) {
+    return this._rules.some((r) => r.contentTypeKey === draft.contentTypeKey && r.id !== draft.id);
+  }
+
   async #save() {
     const draft = this._draft;
-    if (!draft?.contentTypeKey || draft.intervalMonths < 1) return;
+    if (!draft?.contentTypeKey || draft.intervalMonths < 1 || this.#clashes(draft)) return;
 
     const body = {
       contentTypeKey: draft.contentTypeKey,
@@ -65,7 +71,13 @@ export class ReviewRulesDashboardElement extends UmbLitElement {
       notifications?.peek("positive", { data: { message: this.localize.term("powerToysTasks_ruleSaved") } });
     } catch (error) {
       console.error("Tasks: could not save the rule", error);
-      notifications?.peek("danger", { data: { message: this.localize.term("powerToysTasks_ruleFailed") } });
+      // The list may be out of date (someone else added a rule), so show what's there now
+      await this.#load();
+      notifications?.peek("danger", {
+        data: {
+          message: this.localize.term(this.#clashes(draft) ? "powerToysTasks_ruleExists" : "powerToysTasks_ruleFailed"),
+        },
+      });
     } finally {
       this._busy = false;
     }
@@ -113,13 +125,15 @@ export class ReviewRulesDashboardElement extends UmbLitElement {
             <uui-radio value="publish" label=${this.localize.term("powerToysTasks_ruleFromPublish")}></uui-radio>
           </uui-radio-group>
         </umb-property-layout>
-        <p class="hint">${this.localize.term("powerToysTasks_ruleHint")}</p>
+        ${this.#clashes(draft)
+          ? html`<p class="error"><uui-icon name="icon-alert"></uui-icon> ${this.localize.term("powerToysTasks_ruleExists")}</p>`
+          : html`<p class="hint">${this.localize.term("powerToysTasks_ruleHint")}</p>`}
         <div class="buttons">
           <uui-button label=${this.localize.term("powerToysTasks_cancel")} @click=${() => (this._draft = undefined)}></uui-button>
           <uui-button
             look="primary"
             label=${this.localize.term("powerToysTasks_save")}
-            ?disabled=${!draft.contentTypeKey || draft.intervalMonths < 1}
+            ?disabled=${!draft.contentTypeKey || draft.intervalMonths < 1 || this.#clashes(draft)}
             .state=${this._busy ? "waiting" : undefined}
             @click=${this.#save}
           ></uui-button>
@@ -192,6 +206,13 @@ export class ReviewRulesDashboardElement extends UmbLitElement {
 
     .hint {
       color: var(--uui-color-text-alt);
+    }
+
+    .error {
+      display: flex;
+      align-items: center;
+      gap: var(--uui-size-space-2);
+      color: var(--uui-color-danger-standalone);
     }
 
     .actions {
