@@ -4,19 +4,25 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+## [17.1.0] - 2026-10-15
+
+### Added
+
+- BackChat power toy: a chat icon in the header opens a panel to chat with everyone, about the
+  page you're on, or in direct and group conversations, with @mentions, messages that need
+  confirming and content activity lines (#60).
+- Tasks power toy: a tasks icon in the header opens a panel with the tasks assigned to you, the
+  page you're on and a global list, with assignees, due dates and live updates (#61).
 - Content reviews, part of the Tasks power toy and switched on in its settings: give pages a
   review date by hand or by a rule per content type, see what's due in the Tasks panel, mark
-  pages reviewed, and remind the last editor when a page falls due. Brought over from the
-  unreleased BackChat package (#62).
-- The BackChat and Tasks panels now dock beside the page instead of opening over it, so they
-  stay open while you move around the site. A document's chat follows you as you move between
-  pages.
-- Tasks power toy: a header icon opens a sidebar with the tasks assigned to you, the page
-  you're on and a global list, with assignees, due dates and live updates. Brought over from
-  the unreleased BackChat package (#61).
-- BackChat power toy: a header icon opens a sidebar to chat with everyone, about the page you're
-  on, or in direct and group conversations, with @mentions, messages that need confirming and
-  content activity lines. Brought over from the unreleased BackChat package (#60).
+  pages reviewed, and remind the last editor when a page falls due (#62).
+- The BackChat and Tasks panels dock beside the page rather than opening over it, so they stay
+  open while you move around the site.
+
+## [17.0.0] - 2026-08-23
+
+### Added
+
 - Allow use of the dotnet environmentName as well as URL matching for environment-indicator
 - Drag-and-drop reordering of environments in the Environment Indicator settings
 - Power toy settings (and the enabled flag) can now be locked to a value set in
