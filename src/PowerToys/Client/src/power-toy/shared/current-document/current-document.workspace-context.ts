@@ -2,14 +2,14 @@ import { UmbControllerBase } from "@umbraco-cms/backoffice/class-api";
 import type { UmbControllerHost } from "@umbraco-cms/backoffice/controller-api";
 import type { UmbApi } from "@umbraco-cms/backoffice/extension-api";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT } from "@umbraco-cms/backoffice/document";
-import { CHAT_CONTEXT } from "../global/chat.context.token.js";
+import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "./current-document.context.js";
 
-// Tells the chat which document is open, so the header sidebar can offer a "This page" chat
+// Reports which document is open, so the Chat and Tasks sidebars can offer a "This page" list
 // without the document needing a tab of its own. A new document has a key before it's saved,
 // but the server has nothing to check access against yet, so it only counts once saved.
-export class ChatCurrentDocumentWorkspaceContext extends UmbControllerBase implements UmbApi {
+export class PowerToysCurrentDocumentWorkspaceContext extends UmbControllerBase implements UmbApi {
   #workspace?: typeof UMB_DOCUMENT_WORKSPACE_CONTEXT.TYPE;
-  #chat?: typeof CHAT_CONTEXT.TYPE;
+  #current?: typeof UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT.TYPE;
   #unique?: string;
   #isNew?: boolean;
 
@@ -21,8 +21,8 @@ export class ChatCurrentDocumentWorkspaceContext extends UmbControllerBase imple
       this.#observe();
     });
 
-    this.consumeContext(CHAT_CONTEXT, (context) => {
-      this.#chat = context;
+    this.consumeContext(UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT, (context) => {
+      this.#current = context;
       this.#update();
     });
   }
@@ -52,21 +52,21 @@ export class ChatCurrentDocumentWorkspaceContext extends UmbControllerBase imple
   #reported?: string;
 
   #update() {
-    if (!this.#chat) return;
+    if (!this.#current) return;
 
     const unique = this.#unique && this.#isNew === false ? this.#unique : undefined;
     if (unique === this.#reported) return;
 
-    if (this.#reported) this.#chat.clearCurrentDocument(this.#reported);
+    if (this.#reported) this.#current.clear(this.#reported);
     this.#reported = unique;
-    if (unique) this.#chat.setCurrentDocument(unique);
+    if (unique) this.#current.set(unique);
   }
 
   override destroy() {
-    if (this.#reported) this.#chat?.clearCurrentDocument(this.#reported);
+    if (this.#reported) this.#current?.clear(this.#reported);
     this.#reported = undefined;
     super.destroy();
   }
 }
 
-export { ChatCurrentDocumentWorkspaceContext as api };
+export { PowerToysCurrentDocumentWorkspaceContext as api };

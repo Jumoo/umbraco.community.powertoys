@@ -1,4 +1,5 @@
 using PowerToys.PowerToy.Chat.Persistence;
+using PowerToys.PowerToy.Tasks.Persistence;
 using Umbraco.Cms.Core.Packaging;
 
 namespace PowerToys.Persistence;
@@ -15,5 +16,7 @@ public class PowerToysMigrationPlan : PackageMigrationPlan
     {
         To<CreateChatTables>("create-chat-tables");
         To<GrantChatPermissions>("grant-chat-permissions");
+        To<CreateTasksTable>("create-tasks-table");
+        To<GrantTasksPermissions>("grant-tasks-permissions");
     }
 }

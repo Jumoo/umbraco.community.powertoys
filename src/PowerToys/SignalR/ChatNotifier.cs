@@ -16,15 +16,10 @@ public class ChatNotifier(
     ChannelAccessService channelAccess,
     IUserService userService)
 {
-    /// <summary>
-    /// Every connection of a user is in this group, so all their tabs stay in step.
-    /// </summary>
-    internal static string UserGroupName(Guid userKey) => $"user:{userKey}";
-
     public Task<IReadOnlyList<UnreadCount>> GetUnreadCountsAsync(IUser user) => unreadService.GetCountsAsync(user);
 
     public Task SendUnreadCountAsync(Guid userKey, string channel)
-        => hubContext.Clients.Group(UserGroupName(userKey))
+        => hubContext.Clients.Group(PowerToysHub.UserGroupName(userKey))
             .SendAsync("unreadChanged", unreadService.GetCount(userKey, channel));
 
     /// <summary>
@@ -35,7 +30,7 @@ public class ChatNotifier(
     {
         foreach (Guid userKey in userKeys)
         {
-            await hubContext.Clients.Group(UserGroupName(userKey)).SendAsync("mention", message);
+            await hubContext.Clients.Group(PowerToysHub.UserGroupName(userKey)).SendAsync("mention", message);
         }
     }
 

@@ -1,8 +1,6 @@
 // The Chat power toy's alias. Matches ChatConstants.PowerToyAlias on the server.
 export const CHAT_POWER_TOY_ALIAS = "PowerToys.PowerToy.Chat";
 
-// Appended to the server URL. Matches PowerToysHubRoutes on the server.
-export const CHAT_HUB_PATH = "/umbraco/powertoys/hub";
 export const CHAT_GLOBAL_CHANNEL = "global";
 export const CHAT_MAX_MESSAGE_LENGTH = 2000;
 

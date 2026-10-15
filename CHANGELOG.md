@@ -4,6 +4,9 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- Tasks power toy: a header icon opens a sidebar with the tasks assigned to you, the page
+  you're on and a global list, with assignees, due dates and live updates. Brought over from
+  the unreleased BackChat package (#61).
 - BackChat power toy: a header icon opens a sidebar to chat with everyone, about the page you're
   on, or in direct and group conversations, with @mentions, messages that need confirming and
   content activity lines. Brought over from the unreleased BackChat package (#60).

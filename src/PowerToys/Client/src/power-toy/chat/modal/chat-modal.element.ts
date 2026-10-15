@@ -4,6 +4,7 @@ import { UMB_CURRENT_USER_CONTEXT } from "@umbraco-cms/backoffice/current-user";
 import type { ChatModalData, ChatModalResult } from "./chat-modal.token";
 import type { ChatMessage, Conversation, Mentionables, UnreadCount } from "../signalR/types";
 import { CHAT_CONTEXT } from "../global/chat.context.token";
+import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "../../shared/current-document/current-document.context.js";
 import { conversationIcon, conversationTitle } from "../conversations/conversation-title";
 import type { ChatOpenConversationEvent } from "../conversations/conversation-list.element";
 import { ChatTimeOptions, formatBadgeCount } from "../constants";
@@ -48,10 +49,14 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
       this.#context = context;
       if (!context) return;
       this.observe(context.mentionables, (m) => (this._mentionables = m), "_mentionables");
-      this.observe(context.currentDocument, (d) => (this._currentDocument = d ?? undefined), "_currentDocument");
       this.observe(context.conversations, (c) => (this._conversations = c), "_conversations");
       this.observe(context.unread, (u) => (this._unread = u), "_unread");
       this.observe(context.pending, (p) => (this._pending = p), "_pending");
+    });
+
+    this.consumeContext(UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT, (context) => {
+      if (!context) return;
+      this.observe(context.unique, (unique) => (this._currentDocument = unique ?? undefined), "_currentDocument");
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (context) => {

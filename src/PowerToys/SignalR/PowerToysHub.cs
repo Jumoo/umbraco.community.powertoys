@@ -3,6 +3,7 @@ using PowerToys.PowerToy.Chat.Security;
 using PowerToys.Services;
 using PowerToys.Security;
 using PowerToys.PowerToy.Chat.Services;
+using PowerToys.PowerToy.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Umbraco.Cms.Core.Models.Membership;
@@ -30,15 +31,31 @@ public class PowerToysHub(
 {
     public const int MaxMessageLength = 2000;
 
+    /// <summary>
+    /// Every connection of a user is in this group, so all their tabs stay in step.
+    /// </summary>
+    public static string UserGroupName(Guid userKey) => $"user:{userKey}";
+
+    // The hub serves Chat and Tasks, so it takes connections while either is on. Chat's own
+    // methods check Chat is on as well.
     public override async Task OnConnectedAsync()
     {
-        IUser user = await GetCurrentUserAsync();
+        bool chatEnabled = powerToyService.IsEnabled(ChatConstants.PowerToyAlias);
+        if (chatEnabled is false && powerToyService.IsEnabled(TasksConstants.PowerToyAlias) is false)
+        {
+            throw new HubException("Chat and Tasks are turned off.");
+        }
+
+        IUser user = await GetUserAsync();
 
         connections.Add(user.Key);
-        await Groups.AddToGroupAsync(Context.ConnectionId, ChatNotifier.UserGroupName(user.Key));
+        await Groups.AddToGroupAsync(Context.ConnectionId, UserGroupName(user.Key));
 
-        await Clients.Caller.SendAsync("unread", await notifier.GetUnreadCountsAsync(user));
-        await Clients.Caller.SendAsync("pendingConfirmations", confirmationService.GetPending(user.Key));
+        if (chatEnabled)
+        {
+            await Clients.Caller.SendAsync("unread", await notifier.GetUnreadCountsAsync(user));
+            await Clients.Caller.SendAsync("pendingConfirmations", confirmationService.GetPending(user.Key));
+        }
 
         await base.OnConnectedAsync();
     }
@@ -92,11 +109,11 @@ public class PowerToysHub(
             return;
         }
 
-        await Clients.Group(ChatNotifier.UserGroupName(user.Key)).SendAsync("confirmed", messageKey);
+        await Clients.Group(UserGroupName(user.Key)).SendAsync("confirmed", messageKey);
 
         if (messageStore.Get([messageKey]).FirstOrDefault()?.UserKey is Guid senderKey)
         {
-            await Clients.Group(ChatNotifier.UserGroupName(senderKey)).SendAsync("confirmationChanged", messageKey);
+            await Clients.Group(UserGroupName(senderKey)).SendAsync("confirmationChanged", messageKey);
         }
     }
 
@@ -121,7 +138,7 @@ public class PowerToysHub(
         var waiting = confirmationStore.GetStatus(messageKey).Where(r => r.Confirmed is null).Select(r => r.UserKey).ToList();
         foreach (Guid userKey in waiting)
         {
-            await Clients.Group(ChatNotifier.UserGroupName(userKey)).SendAsync("confirmationRequested", message);
+            await Clients.Group(UserGroupName(userKey)).SendAsync("confirmationRequested", message);
         }
 
         return waiting.Count;
@@ -187,7 +204,7 @@ public class PowerToysHub(
 
         foreach (Guid userKey in confirmers)
         {
-            await Clients.Group(ChatNotifier.UserGroupName(userKey)).SendAsync("confirmationRequested", chatMessage);
+            await Clients.Group(UserGroupName(userKey)).SendAsync("confirmationRequested", chatMessage);
         }
 
         return new SendMessageResult(mentions.Unreachable);
@@ -273,10 +290,8 @@ public class PowerToysHub(
 
     public static string GroupName(string channel) => $"chat:{channel}";
 
-    // The user comes from the connection's claims, as Umbraco's own hubs do. The
-    // HttpContext-based accessors aren't reliable inside hub method calls.
-    // Every hub method and the connection itself go through here, so turning the Chat power
-    // toy off closes the hub as well as hiding the header icon.
+    // Every chat method goes through here, so turning the Chat power toy off stops them as
+    // well as hiding the header icon.
     private async Task<IUser> GetCurrentUserAsync()
     {
         if (powerToyService.IsEnabled(ChatConstants.PowerToyAlias) is false)
@@ -284,6 +299,13 @@ public class PowerToysHub(
             throw new HubException("Chat is turned off.");
         }
 
+        return await GetUserAsync();
+    }
+
+    // The user comes from the connection's claims, as Umbraco's own hubs do. The
+    // HttpContext-based accessors aren't reliable inside hub method calls.
+    private async Task<IUser> GetUserAsync()
+    {
         Guid? userKey = Context.User?.Identity?.GetUserKey();
         IUser? user = userKey is null ? null : await userService.GetAsync(userKey.Value);
 

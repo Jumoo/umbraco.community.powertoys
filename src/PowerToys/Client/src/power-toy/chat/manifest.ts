@@ -41,14 +41,6 @@ export const manifests: Array<UmbExtensionManifest> = [
     },
     conditions: [enabled],
   },
-  // Tells the chat which document is open, for the sidebar's "This page" chat
-  {
-    type: "workspaceContext",
-    alias: "PowerToys.Chat.WorkspaceContext.CurrentDocument",
-    name: "Chat Current Document Workspace Context",
-    api: () => import("./workspace/current-document.workspace-context.js"),
-    conditions: [{ alias: "Umb.Condition.WorkspaceAlias", match: "Umb.Workspace.Document" }, enabled],
-  },
   {
     type: "modal",
     alias: "PowerToys.Chat.Modal",

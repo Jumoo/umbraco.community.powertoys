@@ -1,6 +1,7 @@
 import { manifests as entrypoints } from "./entrypoints/manifest.js";
 import { manifests as dashboards } from "./dashboards/manifest.js";
 import { manifests as powerToy } from "./power-toy/manifest.js";
+import { manifests as shared } from "./power-toy/shared/manifest.js";
 // Kept in the codebase as a worked example for anyone adding a new power toy, but not
 // registered - it's not a real tool, so it shouldn't show up on the dashboard.
 // import { manifests as examplePowerToy } from "./power-toy/example/manifest.js";
@@ -12,6 +13,7 @@ import { manifests as environmentIndicatorPowerToy } from "./power-toy/environme
 import { manifests as themeMakerPowerToy } from "./power-toy/theme-maker/manifest.js";
 import { manifests as logoChangerPowerToy } from "./power-toy/logo-changer/manifest.js";
 import { manifests as chatPowerToy } from "./power-toy/chat/manifest.js";
+import { manifests as tasksPowerToy } from "./power-toy/tasks/manifest.js";
 
 // Job of the bundle is to collate all the manifests from different parts of the extension and load other manifests.
 // Registered in code via PowerToysPackageManifestReader.cs rather than a Client/public/umbraco-package.json.
@@ -19,6 +21,7 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...entrypoints,
   ...dashboards,
   ...powerToy,
+  ...shared,
   // ...examplePowerToy,
   ...navbarClockPowerToy,
   ...dashboardManagerPowerToy,
@@ -28,4 +31,5 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...themeMakerPowerToy,
   ...logoChangerPowerToy,
   ...chatPowerToy,
+  ...tasksPowerToy,
 ];
