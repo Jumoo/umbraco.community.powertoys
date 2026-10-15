@@ -294,7 +294,7 @@ export class ChatChatInputBoxElement extends UmbLitElement {
           placeholder=${this.localize.term(
             this._isConnected ? "powerToysChat_messagePlaceholder" : "powerToysChat_connecting"
           )}
-          rows="2"
+          rows="3"
           auto-height
           maxlength=${CHAT_MAX_MESSAGE_LENGTH}
           .value=${this._text}

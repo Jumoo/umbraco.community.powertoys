@@ -214,7 +214,7 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
 
   override render() {
     return html`
-      <umb-body-layout>
+      <umb-body-layout ?main-no-padding=${this._view.kind === "chat"}>
         ${this.#renderHeader()}
         <div class="layout ${this._view.kind}">${this.#renderBody()}</div>
         <div slot="actions">
@@ -249,9 +249,12 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
       gap: var(--uui-size-layout-1);
     }
 
+    /* The chat sets its own padding, with less below the send row than the layout's default */
     .layout.chat {
+      box-sizing: border-box;
       height: 100%;
       overflow: hidden;
+      padding: var(--uui-size-layout-1) var(--uui-size-layout-1) var(--uui-size-space-3);
     }
 
     .badge {
