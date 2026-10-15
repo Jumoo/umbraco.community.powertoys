@@ -97,8 +97,7 @@ export class ChatChatBubbleElement extends UmbLitElement {
     if (this._pending) {
       return html`<uui-button
         compact
-        look="primary"
-        color="positive"
+        look="secondary"
         label=${this.localize.term("powerToysChat_confirmRead")}
         .state=${this._confirming ? "waiting" : undefined}
         @click=${this.#confirm}
@@ -165,8 +164,9 @@ export class ChatChatBubbleElement extends UmbLitElement {
     .body {
       max-width: 80%;
       padding: var(--uui-size-space-3) var(--uui-size-space-4);
-      background-color: var(--uui-color-surface-alt);
-      border: 1px solid var(--uui-color-border);
+      background-color: var(--uui-color-positive);
+      border: 1px solid var(--uui-color-positive);
+      color: var(--uui-color-positive-contrast);
       border-radius: calc(var(--uui-border-radius) * 3);
       white-space: pre-wrap;
       overflow-wrap: anywhere;
@@ -193,7 +193,7 @@ export class ChatChatBubbleElement extends UmbLitElement {
     }
 
     .confirmed {
-      color: var(--uui-color-positive-standalone);
+      color: inherit;
       font-size: var(--uui-type-small-size);
     }
 
@@ -218,12 +218,9 @@ export class ChatChatBubbleElement extends UmbLitElement {
       font-size: var(--uui-type-small-size);
     }
 
+    /* Both bubble colours are filled, so a mention keeps the text colour and is underlined */
     .mention {
       font-weight: 700;
-      color: var(--uui-color-interactive-emphasis);
-    }
-
-    :host([current-user]) .mention {
       color: inherit;
       text-decoration: underline;
     }
