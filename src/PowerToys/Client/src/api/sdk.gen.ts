@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateDocumentTaskData, CreateDocumentTaskErrors, CreateDocumentTaskResponses, CreateGlobalTaskData, CreateGlobalTaskErrors, CreateGlobalTaskResponses, DeleteTaskData, DeleteTaskErrors, DeleteTaskResponses, GetAssigneesData, GetAssigneesErrors, GetAssigneesResponses, GetBackupData, GetBackupErrors, GetBackupResponses, GetDocumentTasksData, GetDocumentTasksErrors, GetDocumentTasksResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetGlobalTasksData, GetGlobalTasksErrors, GetGlobalTasksResponses, GetOpenTasksData, GetOpenTasksErrors, GetOpenTasksResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, GetVersionData, GetVersionErrors, GetVersionResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses, SortDocumentTasksData, SortDocumentTasksErrors, SortDocumentTasksResponses, SortGlobalTasksData, SortGlobalTasksErrors, SortGlobalTasksResponses, UpdateTaskData, UpdateTaskErrors, UpdateTaskResponses } from './types.gen';
+import type { CreateDocumentTaskData, CreateDocumentTaskErrors, CreateDocumentTaskResponses, CreateGlobalTaskData, CreateGlobalTaskErrors, CreateGlobalTaskResponses, CreateReviewRuleData, CreateReviewRuleErrors, CreateReviewRuleResponses, DeleteReviewRuleData, DeleteReviewRuleErrors, DeleteReviewRuleResponses, DeleteTaskData, DeleteTaskErrors, DeleteTaskResponses, GetAssigneesData, GetAssigneesErrors, GetAssigneesResponses, GetBackupData, GetBackupErrors, GetBackupResponses, GetDocumentTasksData, GetDocumentTasksErrors, GetDocumentTasksResponses, GetDueReviewsData, GetDueReviewsErrors, GetDueReviewsResponses, GetEnabledData, GetEnabledErrors, GetEnabledLockedData, GetEnabledLockedErrors, GetEnabledLockedResponses, GetEnabledResponses, GetEnvironmentNameData, GetEnvironmentNameErrors, GetEnvironmentNameResponses, GetGlobalTasksData, GetGlobalTasksErrors, GetGlobalTasksResponses, GetOpenTasksData, GetOpenTasksErrors, GetOpenTasksResponses, GetReviewData, GetReviewErrors, GetReviewResponses, GetReviewRulesData, GetReviewRulesErrors, GetReviewRulesResponses, GetSettingsData, GetSettingsErrors, GetSettingsLockedData, GetSettingsLockedErrors, GetSettingsLockedResponses, GetSettingsResponses, GetUrlData, GetUrlErrors, GetUrlResponses, GetVersionData, GetVersionErrors, GetVersionResponses, MarkReviewedData, MarkReviewedErrors, MarkReviewedResponses, PingData, PingErrors, PingResponses, RestoreBackupData, RestoreBackupErrors, RestoreBackupResponses, SaveSettingsData, SaveSettingsErrors, SaveSettingsResponses, SetEnabledData, SetEnabledErrors, SetEnabledResponses, SetReviewDateData, SetReviewDateErrors, SetReviewDateResponses, SortDocumentTasksData, SortDocumentTasksErrors, SortDocumentTasksResponses, SortGlobalTasksData, SortGlobalTasksErrors, SortGlobalTasksResponses, UpdateReviewRuleData, UpdateReviewRuleErrors, UpdateReviewRuleResponses, UpdateTaskData, UpdateTaskErrors, UpdateTaskResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -184,6 +184,128 @@ export class PowerToysService {
             ],
             url: '/umbraco/powertoys/api/v1/version',
             ...options
+        });
+    }
+}
+
+export class ReviewsService {
+    public static getReview<ThrowOnError extends boolean = false>(options: Options<GetReviewData, ThrowOnError>) {
+        return (options.client ?? client).get<GetReviewResponses, GetReviewErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/document/{documentKey}',
+            ...options
+        });
+    }
+    
+    public static setReviewDate<ThrowOnError extends boolean = false>(options: Options<SetReviewDateData, ThrowOnError>) {
+        return (options.client ?? client).put<SetReviewDateResponses, SetReviewDateErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/document/{documentKey}/date',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static markReviewed<ThrowOnError extends boolean = false>(options: Options<MarkReviewedData, ThrowOnError>) {
+        return (options.client ?? client).post<MarkReviewedResponses, MarkReviewedErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/document/{documentKey}/reviewed',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    public static getDueReviews<ThrowOnError extends boolean = false>(options?: Options<GetDueReviewsData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetDueReviewsResponses, GetDueReviewsErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/due',
+            ...options
+        });
+    }
+    
+    public static getReviewRules<ThrowOnError extends boolean = false>(options?: Options<GetReviewRulesData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetReviewRulesResponses, GetReviewRulesErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/rules',
+            ...options
+        });
+    }
+    
+    public static createReviewRule<ThrowOnError extends boolean = false>(options?: Options<CreateReviewRuleData, ThrowOnError>) {
+        return (options?.client ?? client).post<CreateReviewRuleResponses, CreateReviewRuleErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/rules',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers
+            }
+        });
+    }
+    
+    public static deleteReviewRule<ThrowOnError extends boolean = false>(options: Options<DeleteReviewRuleData, ThrowOnError>) {
+        return (options.client ?? client).delete<DeleteReviewRuleResponses, DeleteReviewRuleErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/rules/{id}',
+            ...options
+        });
+    }
+    
+    public static updateReviewRule<ThrowOnError extends boolean = false>(options: Options<UpdateReviewRuleData, ThrowOnError>) {
+        return (options.client ?? client).put<UpdateReviewRuleResponses, UpdateReviewRuleErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/powertoys/api/v1/reviews/rules/{id}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
         });
     }
 }

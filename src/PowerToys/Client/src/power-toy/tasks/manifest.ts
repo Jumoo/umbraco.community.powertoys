@@ -1,6 +1,7 @@
 import {
   TASKS_PERMISSION_ENTITY_TYPE,
   TASKS_PERMISSION_MANAGE_GLOBAL,
+  TASKS_PERMISSION_MANAGE_REVIEWS,
   TASKS_PERMISSION_VIEW_ALL,
   TASKS_POWER_TOY_ALIAS,
 } from "./constants.js";
@@ -29,6 +30,10 @@ export const manifests: Array<UmbExtensionManifest> = [
       label: "Tasks",
       description: "To-do lists for each page and for the whole site, from the backoffice header.",
       icon: "icon-checkbox",
+      modal: {
+        element: () => import("./settings/tasks-settings-modal.element.js"),
+        savable: true,
+      },
     },
   },
   // Always registered, but it only asks for the hub connection while the power toy is on
@@ -62,6 +67,31 @@ export const manifests: Array<UmbExtensionManifest> = [
     js: () => import("./localization/en-us.js"),
   },
   // In the user group editor whether or not the power toy is on, so groups can be set up first
-  permission(TASKS_PERMISSION_MANAGE_GLOBAL, "ManageGlobal", 200),
-  permission(TASKS_PERMISSION_VIEW_ALL, "ViewAll", 100),
+  permission(TASKS_PERMISSION_MANAGE_GLOBAL, "ManageGlobal", 300),
+  permission(TASKS_PERMISSION_VIEW_ALL, "ViewAll", 200),
+  permission(TASKS_PERMISSION_MANAGE_REVIEWS, "ManageReviews", 100),
+  // Content reviews, part of Tasks
+  {
+    type: "condition",
+    alias: "PowerToys.Condition.ReviewsEnabled",
+    name: "Content Reviews Enabled Condition",
+    api: () => import("./reviews/reviews-enabled.condition.js"),
+  },
+  // The review rules screen, in Settings while reviews are on, for users allowed to manage them
+  {
+    type: "dashboard",
+    alias: "PowerToys.Tasks.Dashboard.ReviewRules",
+    name: "Review Rules Dashboard",
+    element: () => import("./reviews/review-rules-dashboard.element.js"),
+    weight: -10,
+    meta: {
+      label: "#powerToysTasks_reviewRules",
+      pathname: "review-rules",
+    },
+    conditions: [
+      { alias: "Umb.Condition.SectionAlias", match: "Umb.Section.Settings" },
+      { alias: "PowerToys.Condition.ReviewsEnabled" },
+      { alias: "PowerToys.Condition.UserPermission", match: TASKS_PERMISSION_MANAGE_REVIEWS },
+    ],
+  },
 ];

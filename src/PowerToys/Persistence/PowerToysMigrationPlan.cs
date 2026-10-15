@@ -18,5 +18,7 @@ public class PowerToysMigrationPlan : PackageMigrationPlan
         To<GrantChatPermissions>("grant-chat-permissions");
         To<CreateTasksTable>("create-tasks-table");
         To<GrantTasksPermissions>("grant-tasks-permissions");
+        To<CreateReviewTables>("create-review-tables");
+        To<GrantReviewPermissions>("grant-review-permissions");
     }
 }
