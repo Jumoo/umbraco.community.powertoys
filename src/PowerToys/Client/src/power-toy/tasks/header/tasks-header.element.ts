@@ -60,8 +60,8 @@ export class TasksHeaderAppElement extends UmbHeaderAppButtonElement {
       }
 
       /* Shows which header button's panel is open beside the page */
-      uui-button.open {
-        --uui-button-background-color: var(--uui-color-current);
+      uui-button.open uui-icon {
+        color: var(--uui-color-current);
       }
     `,
   ];
