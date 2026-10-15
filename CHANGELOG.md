@@ -4,6 +4,9 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- Custom keyboard shortcuts: admins can add shortcuts in the Keyboard Shortcuts settings to go to
+  a section or URL, open search or a Power Toys panel, or run a workspace or entity action on
+  the open item. Alt+1 to Alt+9 go to the sections out of the box (#70).
 - Keyboard Shortcuts power toy: press ? or use the header button to open a panel listing the
   shortcuts that work on the screen you're on, read live from Umbraco, plus the common keys
   that work everywhere (#68).

@@ -13,6 +13,11 @@ export const manifests: Array<UmbExtensionManifest> = [
       label: "Keyboard Shortcuts",
       description: "Press ? or use the header button to see the keyboard shortcuts that work on the screen you're on.",
       icon: "icon-keyboard",
+      modal: {
+        element: () => import("./settings/shortcuts-settings-modal.element.js"),
+        savable: true,
+        size: "medium",
+      },
     },
   },
   // Always registered: it collects shortcuts as workspaces open, and only listens for "?"
