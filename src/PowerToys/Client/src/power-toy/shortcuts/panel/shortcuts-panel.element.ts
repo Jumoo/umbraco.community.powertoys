@@ -3,6 +3,7 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { SHORTCUTS_CONTEXT } from "../shortcuts.context.js";
 import { FIXED_SHORTCUTS, keysOf, type ShortcutEntry } from "../constants.js";
 import "../../shared/panel/panel-layout.element.js";
+import { customShortcutLabel } from "../settings/shortcut-label.js";
 
 // Labels Umbraco registers as a localisation key it doesn't define, so they arrive as the raw
 // key. Umbraco 17's save and publish shortcut does this (content_saveAndPublishShortcut).
@@ -20,12 +21,20 @@ export class ShortcutsPanelElement extends UmbLitElement {
   @state()
   private _current: ShortcutEntry[] = [];
 
+  @state()
+  private _custom: ShortcutEntry[] = [];
+
   constructor() {
     super();
 
     this.consumeContext(SHORTCUTS_CONTEXT, (context) => {
       if (!context) return;
       this.observe(context.current, (current) => (this._current = current), "_current");
+      this.observe(
+        context.globalCustom,
+        (custom) => (this._custom = custom.map((s) => ({ ...s, label: customShortcutLabel(s) }))),
+        "_custom"
+      );
     });
   }
 
@@ -62,6 +71,10 @@ export class ShortcutsPanelElement extends UmbLitElement {
               ? this.#renderList(this._current)
               : html`<p class="empty">${this.localize.term("powerToysShortcuts_noneHere")}</p>`}
           </uui-box>
+
+          ${this._custom.length
+            ? html`<uui-box headline=${this.localize.term("powerToysShortcuts_yourShortcuts")}>${this.#renderList(this._custom)}</uui-box>`
+            : nothing}
 
           ${FIXED_SHORTCUTS.map(
             (group) => html`<uui-box headline=${this.localize.string(group.group)}>${this.#renderList(group.shortcuts)}</uui-box>`
