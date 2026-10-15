@@ -52,12 +52,6 @@ export const manifests: Array<UmbExtensionManifest> = [
     conditions: [{ alias: "PowerToys.Condition.PowerToyEnabled", match: TASKS_POWER_TOY_ALIAS }],
   },
   {
-    type: "modal",
-    alias: "PowerToys.Tasks.Modal",
-    name: "Tasks Modal",
-    element: () => import("./modal/tasks-modal.element.js"),
-  },
-  {
     type: "localization",
     alias: "PowerToys.Tasks.Localization.EnUs",
     name: "Tasks English (US) Localization",

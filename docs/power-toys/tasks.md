@@ -8,7 +8,8 @@ layout: default
 To-do lists for each page and for the whole site, from the backoffice header.
 
 Turn the tool on from its card on the Power Toys dashboard. A tasks icon then appears in the
-header for every user, with a badge for open tasks assigned to you. It opens a sidebar with:
+header for every user, with a badge for open tasks assigned to you. It opens a panel beside the page, which stays
+open while you move around the site, with:
 
 - **Assigned to you** - your open tasks from every page and the global list, soonest due first.
   Mark one done from here, or open a page's task to go to that page.
@@ -17,7 +18,7 @@ header for every user, with a badge for open tasks assigned to you. It opens a s
 - **Global** - tasks that aren't about one page, such as "Review the site navigation".
 
 Each task has a title, and can be given someone to do it and a due date. Tasks can be
-reordered, ticked off and deleted. Every open sidebar updates as soon as anyone changes a task.
+reordered, ticked off and deleted. Every open panel updates as soon as anyone changes a task.
 When a task is assigned to you, you get a notification.
 
 ## Who can do what

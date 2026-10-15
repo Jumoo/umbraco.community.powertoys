@@ -9,7 +9,8 @@ Chat with other editors from the backoffice header: everyone at once, about the 
 open, or in a direct or group conversation.
 
 Turn the tool on from its card on the Power Toys dashboard. A chat icon then appears in the
-header for every user. It opens a sidebar with:
+header for every user. It opens a panel beside the page, which stays open while you move
+around the site, with:
 
 - **Waiting for you to confirm** - messages someone has asked you to confirm you've read.
 - **This page** - the chat about the document you have open. Only shown while a saved document
@@ -23,7 +24,7 @@ The header icon shows how many messages you haven't read, in red when one of the
 
 - **@mentions.** Type `@` to mention a person or, with permission, a user group. Mentioned people
   get a notification and a stronger badge.
-- **Direct and group conversations.** Start one from *New* in the sidebar, with up to four other
+- **Direct and group conversations.** Start one from *New* in the panel, with up to four other
   people or, with permission, a whole user group.
 - **Messages that need confirming.** Ask everyone, a group or the people in a conversation to
   confirm they've read a message. Important ones stay on screen until confirmed. The sender can

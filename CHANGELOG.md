@@ -4,6 +4,9 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- The BackChat and Tasks panels now dock beside the page instead of opening over it, so they
+  stay open while you move around the site. A document's chat follows you as you move between
+  pages.
 - Tasks power toy: a header icon opens a sidebar with the tasks assigned to you, the page
   you're on and a global list, with assignees, due dates and live updates. Brought over from
   the unreleased BackChat package (#61).
