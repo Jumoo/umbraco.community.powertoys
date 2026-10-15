@@ -21,6 +21,8 @@ Each task has a title, and can be given someone to do it and a due date. Tasks c
 reordered, ticked off and deleted. Every open panel updates as soon as anyone changes a task.
 When a task is assigned to you, you get a notification.
 
+![The Tasks panel showing the tasks assigned to you and the to-do list for the About page, with assignees and due dates](../screenshots/backchat-tasks.jpg)
+
 ## Who can do what
 
 - A page's tasks follow the page: anyone who can browse the page sees its tasks, and anyone who
@@ -37,17 +39,25 @@ Administrators get them on install; other groups get none.
 ## Content reviews
 
 Content reviews give pages a date to be reviewed by. They're part of Tasks, and off until you
-switch them on in the Tasks card's settings. Once on, the panel gains two more boxes:
+switch them on in the Tasks card's settings.
+
+![The Tasks settings: use content reviews, the group to remind when a page's last editor can't be found, and how often to check](../screenshots/tasks-settings.jpg)
+
+Once on, the panel gains two more boxes:
 
 - **Due for review** - pages that have fallen due and that you edited last, soonest first.
 - **Review** - for the page you have open: when it's due and where that date came from, a date
   you can set by hand, *Mark as reviewed* with an optional note, and the reviews so far.
+
+![The Tasks panel showing two pages due for review, and the Review box for the Contact page, which is overdue](../screenshots/backchat-reviews.jpg)
 
 A page gets its date by hand, or from a rule for its content type: "every 6 months from the
 last review" or "from the last publish". Rules live on the *Review rules* dashboard in the
 Settings section, for users with the *Manage review rules* permission. A date set by hand wins
 over the rule until the page is next reviewed. Adding a rule gives existing pages of that type
 the full interval from today, so nothing is overdue straight away.
+
+![The Review rules dashboard in the Settings section, with rules for the Content and Home content types](../screenshots/review-rules.jpg)
 
 When a page falls due, its last editor is reminded once, with a notification if they're signed
 in. When the last editor can't be found, the group chosen in the settings is reminded instead
