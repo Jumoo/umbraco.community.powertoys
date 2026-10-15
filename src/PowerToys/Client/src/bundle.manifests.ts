@@ -11,6 +11,7 @@ import { manifests as helpMenuEditorPowerToy } from "./power-toy/help-menu-edito
 import { manifests as environmentIndicatorPowerToy } from "./power-toy/environment-indicator/manifest.js";
 import { manifests as themeMakerPowerToy } from "./power-toy/theme-maker/manifest.js";
 import { manifests as logoChangerPowerToy } from "./power-toy/logo-changer/manifest.js";
+import { manifests as chatPowerToy } from "./power-toy/chat/manifest.js";
 
 // Job of the bundle is to collate all the manifests from different parts of the extension and load other manifests.
 // Registered in code via PowerToysPackageManifestReader.cs rather than a Client/public/umbraco-package.json.
@@ -26,4 +27,5 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...environmentIndicatorPowerToy,
   ...themeMakerPowerToy,
   ...logoChangerPowerToy,
+  ...chatPowerToy,
 ];
