@@ -249,12 +249,11 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
       gap: var(--uui-size-layout-1);
     }
 
-    /* The chat sets its own padding, with less below the send row than the layout's default */
+    /* No padding here: the chat pads its own parts, so its scrollbar and the line above the
+       message box run to the edges */
     .layout.chat {
-      box-sizing: border-box;
       height: 100%;
       overflow: hidden;
-      padding: var(--uui-size-layout-1) var(--uui-size-layout-1) var(--uui-size-space-3);
     }
 
     .badge {

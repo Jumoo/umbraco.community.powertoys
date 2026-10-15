@@ -135,10 +135,10 @@ export class ChatChatMessagesElement extends UmbLitElement {
     .layout {
       display: flex;
       flex-direction: column;
-      gap: var(--uui-size-space-3);
       height: 100%;
     }
 
+    /* Padded inside the scrolling area, so the scrollbar sits flush with the edge */
     .messages {
       flex: 1 1 0;
       min-height: 0;
@@ -146,11 +146,13 @@ export class ChatChatMessagesElement extends UmbLitElement {
       display: flex;
       flex-direction: column;
       gap: var(--uui-size-space-4);
+      padding: var(--uui-size-layout-1);
     }
 
+    /* The line above runs full width; the box and buttons keep their space from the sides */
     .composer {
       border-top: 1px solid var(--uui-color-divider-standalone);
-      padding-top: var(--uui-size-space-3);
+      padding: var(--uui-size-space-3) var(--uui-size-layout-1);
     }
 
     .empty {
