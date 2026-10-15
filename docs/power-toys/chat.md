@@ -20,6 +20,8 @@ around the site, with:
 
 The header icon shows how many messages you haven't read, in red when one of them mentions you.
 
+![The BackChat panel open beside the About page, with a conversation between two editors and lines showing when the page was saved and published](../screenshots/backchat-chat.jpg)
+
 ## What you can do
 
 - **@mentions.** Type `@` to mention a person or, with permission, a user group. Mentioned people
