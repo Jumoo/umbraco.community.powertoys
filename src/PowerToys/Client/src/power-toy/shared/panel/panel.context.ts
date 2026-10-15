@@ -4,7 +4,7 @@ import { UmbContextToken } from "@umbraco-cms/backoffice/context-api";
 import { UmbStringState } from "@umbraco-cms/backoffice/observable-api";
 
 /** The panels that can open in the docked side panel. */
-export type PowerToysPanelName = "chat" | "tasks";
+export type PowerToysPanelName = "chat" | "tasks" | "shortcuts";
 
 /**
  * Which power toy's panel is open in the side panel docked beside the backoffice, if any.

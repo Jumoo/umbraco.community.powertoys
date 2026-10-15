@@ -4,6 +4,10 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- Keyboard Shortcuts power toy: press ? or use the header button to open a panel listing the
+  shortcuts that work on the screen you're on, read live from Umbraco, plus the common keys
+  that work everywhere (#68).
+
 ## [17.1.0] - 2026-10-15
 
 ### Added
