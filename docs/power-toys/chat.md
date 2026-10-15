@@ -18,6 +18,8 @@ around the site, with:
 - **Your conversations** - *Everyone*, your direct and group conversations, and document chats
   with something unread.
 
+![The BackChat panel's conversation list: This page, then Everyone, a document chat, a direct conversation and a user group conversation, with unread counts](../screenshots/backchat-conversations.jpg)
+
 The header icon shows how many messages you haven't read, in red when one of them mentions you.
 
 ![The BackChat panel open beside the About page, with a conversation between two editors and lines showing when the page was saved and published](../screenshots/backchat-chat.jpg)
@@ -40,6 +42,8 @@ A document's chat is only visible to users who can browse that document.
 
 The card's settings choose whether content activity is posted, which events post a line, and how
 many minutes of repeated saves collapse into one.
+
+![The BackChat settings: post activity lines, which events to post, and how many minutes of repeated saves collapse into one](../screenshots/backchat-settings.jpg)
 
 Like every power toy, the settings can be fixed in `appsettings.json` instead:
 
