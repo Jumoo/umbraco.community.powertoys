@@ -1,7 +1,6 @@
 import { UmbHeaderAppButtonElement } from "@umbraco-cms/backoffice/components";
 import { css, customElement, html, nothing, state } from "@umbraco-cms/backoffice/external/lit";
-import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
-import { CHAT_MODAL } from "../modal/chat-modal.token";
+import { UMB_POWER_TOYS_PANEL_CONTEXT } from "../../shared/panel/panel.context.js";
 import { CHAT_CONTEXT } from "../global/chat.context.token";
 import { formatBadgeCount } from "../constants";
 
@@ -13,6 +12,9 @@ export class ChatHeaderAppElement extends UmbHeaderAppButtonElement {
   @state()
   private _mentions = 0;
 
+  @state()
+  private _open = false;
+
   constructor() {
     super();
 
@@ -21,11 +23,23 @@ export class ChatHeaderAppElement extends UmbHeaderAppButtonElement {
       this.observe(context.totalUnread, (total) => (this._unread = total), "_unread");
       this.observe(context.totalMentions, (total) => (this._mentions = total), "_mentions");
     });
+
+    this.consumeContext(UMB_POWER_TOYS_PANEL_CONTEXT, (context) => {
+      if (!context) return;
+      this.observe(context.isOpen("chat"), (open) => (this._open = open), "_open");
+    });
   }
 
   override render() {
     return html`
-      <uui-button look="primary" label=${this.localize.term("powerToysChat_chat")} compact @click=${this.#onClick}>
+      <uui-button
+        look="primary"
+        class=${this._open ? "open" : ""}
+        label=${this.localize.term("powerToysChat_chat")}
+        aria-pressed=${this._open ? "true" : "false"}
+        compact
+        @click=${this.#onClick}
+      >
         <uui-icon name="icon-chat"></uui-icon>
         ${this.#renderBadge()}
       </uui-button>
@@ -45,11 +59,8 @@ export class ChatHeaderAppElement extends UmbHeaderAppButtonElement {
   }
 
   async #onClick() {
-    const modalManager = await this.getContext(UMB_MODAL_MANAGER_CONTEXT);
-    if (!modalManager) return;
-
-    const chatModal = modalManager.open(this, CHAT_MODAL, { data: {} });
-    await chatModal.onSubmit().catch(() => undefined);
+    const panel = await this.getContext(UMB_POWER_TOYS_PANEL_CONTEXT);
+    panel?.toggle("chat");
   }
 
   static override readonly styles = [
@@ -57,6 +68,11 @@ export class ChatHeaderAppElement extends UmbHeaderAppButtonElement {
     css`
       uui-badge {
         font-size: var(--uui-type-small-size);
+      }
+
+      /* Shows which header button's panel is open beside the page */
+      uui-button.open {
+        --uui-button-background-color: var(--uui-color-current);
       }
     `,
   ];

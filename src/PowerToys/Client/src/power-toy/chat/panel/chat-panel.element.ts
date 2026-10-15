@@ -1,7 +1,6 @@
 import { css, customElement, html, nothing, state } from "@umbraco-cms/backoffice/external/lit";
-import { UmbModalBaseElement } from "@umbraco-cms/backoffice/modal";
+import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UMB_CURRENT_USER_CONTEXT } from "@umbraco-cms/backoffice/current-user";
-import type { ChatModalData, ChatModalResult } from "./chat-modal.token";
 import type { ChatMessage, Conversation, Mentionables, UnreadCount } from "../signalR/types";
 import { CHAT_CONTEXT } from "../global/chat.context.token";
 import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "../../shared/current-document/current-document.context.js";
@@ -12,13 +11,15 @@ import { toPlainText } from "../mentions/mentions";
 import "../components/chat-messages.element";
 import "../conversations/conversation-list.element";
 import "../conversations/new-conversation.element";
+import "../../shared/panel/panel-layout.element.js";
 
 type View = { kind: "list" } | { kind: "new" } | { kind: "chat"; conversation: Conversation; thisPage?: boolean };
 
-// The header chat: what's waiting for you, the page you're on, then your conversations.
-// Every conversation, a document's included, opens here in the sidebar.
-@customElement("power-toys-chat-modal")
-export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatModalResult> {
+// The chat panel docked beside the backoffice: what's waiting for you, the page you're on, then
+// your conversations. Every conversation, a document's included, opens here, and it stays open
+// while you move around the site.
+@customElement("power-toys-chat-panel")
+export class ChatPanelElement extends UmbLitElement {
   @state()
   private _view: View = { kind: "list" };
 
@@ -56,7 +57,7 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
 
     this.consumeContext(UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT, (context) => {
       if (!context) return;
-      this.observe(context.unique, (unique) => (this._currentDocument = unique ?? undefined), "_currentDocument");
+      this.observe(context.unique, (unique) => this.#onCurrentDocument(unique ?? undefined), "_currentDocument");
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (context) => {
@@ -65,14 +66,25 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
     });
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    if (this.data?.conversation) this._view = { kind: "chat", conversation: this.data.conversation };
+  // "This page" follows the editor: moving to another document switches to its chat, and
+  // leaving documents altogether goes back to the list
+  #onCurrentDocument(unique: string | undefined) {
+    this._currentDocument = unique;
+    clearTimeout(this.#leaveTimer);
+    if (this._view.kind !== "chat" || !this._view.thisPage) return;
+
+    if (unique) {
+      this._view = { kind: "chat", conversation: this.#thisPageConversation(unique), thisPage: true };
+    } else {
+      // Moving between documents closes the old workspace before the new one opens, so wait a
+      // moment before deciding the editor has left documents altogether
+      this.#leaveTimer = setTimeout(() => {
+        if (!this._currentDocument && this._view.kind === "chat" && this._view.thisPage) this._view = { kind: "list" };
+      }, 1000);
+    }
   }
 
-  #onClose() {
-    this.modalContext?.reject();
-  }
+  #leaveTimer?: ReturnType<typeof setTimeout>;
 
   #onOpen(e: ChatOpenConversationEvent) {
     this._view = { kind: "chat", conversation: e.conversation };
@@ -108,35 +120,31 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
     }
   }
 
-  #renderHeader() {
-    const icon = this._view.kind === "chat" ? conversationIcon(this._view.conversation) : "icon-chat";
+  #renderHeaderStart() {
+    if (this._view.kind === "list") return nothing;
 
-    return html`
-      <div slot="header" class="header">
-        ${this._view.kind !== "list"
-          ? html`<uui-button
-              compact
-              label=${this.localize.term("powerToysChat_back")}
-              @click=${() => (this._view = { kind: "list" })}
-            >
-              <uui-icon name="icon-arrow-left"></uui-icon>
-            </uui-button>`
-          : nothing}
-        <uui-icon name=${icon}></uui-icon>
-        <h3>${this.#title()}</h3>
-        ${this._view.kind === "list"
-          ? html`<uui-button
-              class="new"
-              look="secondary"
-              compact
-              label=${this.localize.term("powerToysChat_newConversation")}
-              @click=${() => (this._view = { kind: "new" })}
-            >
-              <uui-icon name="icon-add"></uui-icon> ${this.localize.term("powerToysChat_new")}
-            </uui-button>`
-          : nothing}
-      </div>
-    `;
+    return html`<uui-button
+      slot="header-start"
+      compact
+      label=${this.localize.term("powerToysChat_back")}
+      @click=${() => (this._view = { kind: "list" })}
+    >
+      <uui-icon name="icon-arrow-left"></uui-icon>
+    </uui-button>`;
+  }
+
+  #renderHeaderActions() {
+    if (this._view.kind !== "list") return nothing;
+
+    return html`<uui-button
+      slot="header-actions"
+      look="secondary"
+      compact
+      label=${this.localize.term("powerToysChat_newConversation")}
+      @click=${() => (this._view = { kind: "new" })}
+    >
+      <uui-icon name="icon-add"></uui-icon> ${this.localize.term("powerToysChat_new")}
+    </uui-button>`;
   }
 
   #renderPending() {
@@ -218,34 +226,20 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
   }
 
   override render() {
+    const icon = this._view.kind === "chat" ? conversationIcon(this._view.conversation) : "icon-chat";
+
     return html`
-      <umb-body-layout ?main-no-padding=${this._view.kind === "chat"}>
-        ${this.#renderHeader()}
+      <power-toys-panel-layout headline=${this.#title()} icon=${icon} ?flush=${this._view.kind === "chat"}>
+        ${this.#renderHeaderStart()} ${this.#renderHeaderActions()}
         <div class="layout ${this._view.kind}">${this.#renderBody()}</div>
-        <div slot="actions">
-          <uui-button label=${this.localize.term("powerToysChat_close")} @click=${this.#onClose}></uui-button>
-        </div>
-      </umb-body-layout>
+      </power-toys-panel-layout>
     `;
   }
 
   static override styles = css`
-    .header {
-      display: flex;
-      gap: var(--uui-size-space-2);
-      align-items: center;
-      width: 100%;
-      min-width: 0;
-    }
-
-    .header h3 {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .header .new {
-      margin-left: auto;
+    :host {
+      display: block;
+      height: 100%;
     }
 
     .layout.list {
@@ -254,8 +248,8 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
       gap: var(--uui-size-layout-1);
     }
 
-    /* No padding here: the chat pads its own parts, so its scrollbar and the line above the
-       message box run to the edges */
+    /* The panel's content has no padding in a chat: the chat pads its own parts, so its
+       scrollbar and the line above the message box run to the edges */
     .layout.chat {
       height: 100%;
       overflow: hidden;
@@ -267,4 +261,10 @@ export class ChatModalElement extends UmbModalBaseElement<ChatModalData, ChatMod
   `;
 }
 
-export default ChatModalElement;
+export default ChatPanelElement;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "power-toys-chat-panel": ChatPanelElement;
+  }
+}

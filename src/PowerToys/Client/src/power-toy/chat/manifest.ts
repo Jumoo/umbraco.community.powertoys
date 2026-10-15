@@ -43,12 +43,6 @@ export const manifests: Array<UmbExtensionManifest> = [
   },
   {
     type: "modal",
-    alias: "PowerToys.Chat.Modal",
-    name: "Chat Modal",
-    element: () => import("./modal/chat-modal.element.js"),
-  },
-  {
-    type: "modal",
     alias: "PowerToys.Chat.Modal.Important",
     name: "Chat Important Message Modal",
     element: () => import("./confirmations/important-modal.element.js"),

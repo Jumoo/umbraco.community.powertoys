@@ -1,6 +1,19 @@
 // Pieces more than one power toy uses. Each is cheap while nothing needs it: the hub only
 // connects when a power toy asks for it.
 export const manifests: Array<UmbExtensionManifest> = [
+  // The side panel docked beside the backoffice, which the Chat and Tasks header buttons open
+  {
+    type: "globalContext",
+    alias: "PowerToys.GlobalContext.Panel",
+    name: "Power Toys Panel Context",
+    api: () => import("./panel/panel.context.js"),
+  },
+  {
+    type: "backofficeEntryPoint",
+    alias: "PowerToys.BackofficeEntryPoint.Panel",
+    name: "Power Toys Docked Panel Entry Point",
+    js: () => import("./panel/entry-point.js"),
+  },
   {
     type: "globalContext",
     alias: "PowerToys.GlobalContext.Hub",

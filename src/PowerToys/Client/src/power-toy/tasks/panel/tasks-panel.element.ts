@@ -1,5 +1,5 @@
 import { css, customElement, html, nothing, state } from "@umbraco-cms/backoffice/external/lit";
-import { UmbModalBaseElement, UmbModalToken } from "@umbraco-cms/backoffice/modal";
+import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
 import { UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN } from "@umbraco-cms/backoffice/document";
 import { TasksService, type TaskResponseModel } from "../../../api/index.js";
@@ -7,16 +7,14 @@ import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "../../shared/current-do
 import { TASKS_CONTEXT, type TasksContext } from "../tasks.context.js";
 import { TASKS_PERMISSION_MANAGE_GLOBAL } from "../constants.js";
 import "../components/task-list.element.js";
-
-export const TASKS_MODAL = new UmbModalToken<Record<string, never>, Record<string, never>>("PowerToys.Tasks.Modal", {
-  modal: { type: "sidebar", size: "small" },
-});
+import "../../shared/panel/panel-layout.element.js";
 
 const ASSIGNED_PAGE_SIZE = 20;
 
-// The header's tasks sidebar: what's assigned to you, the page you're on, and the global list
-@customElement("power-toys-tasks-modal")
-export class TasksModalElement extends UmbModalBaseElement {
+// The tasks panel docked beside the backoffice: what's assigned to you, the page you're on, and
+// the global list. It stays open while you move around the site.
+@customElement("power-toys-tasks-panel")
+export class TasksPanelElement extends UmbLitElement {
   @state()
   private _assigned: TaskResponseModel[] = [];
 
@@ -77,10 +75,10 @@ export class TasksModalElement extends UmbModalBaseElement {
     this.#context?.refresh();
   }
 
-  // A document's task opens its document, where the sidebar's "This page" list has it
+  // A document's task opens its document, where the panel's "This page" list has it. The panel
+  // stays open beside it.
   #open(task: TaskResponseModel) {
     if (!task.documentKey) return;
-    this.modalContext?.reject();
     window.history.pushState({}, "", UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN.generateAbsolute({ unique: task.documentKey }));
   }
 
@@ -132,7 +130,7 @@ export class TasksModalElement extends UmbModalBaseElement {
 
   override render() {
     return html`
-      <umb-body-layout headline=${this.localize.term("powerToysTasks_tasks")}>
+      <power-toys-panel-layout headline=${this.localize.term("powerToysTasks_tasks")} icon="icon-checkbox">
         <div class="layout">
           <uui-box>
             <div slot="headline" class="headline">
@@ -161,14 +159,16 @@ export class TasksModalElement extends UmbModalBaseElement {
             <power-toys-task-list .documentKey=${null} ?editable=${this._canManageGlobal}></power-toys-task-list>
           </uui-box>
         </div>
-        <div slot="actions">
-          <uui-button label=${this.localize.term("powerToysTasks_close")} @click=${() => this.modalContext?.reject()}></uui-button>
-        </div>
-      </umb-body-layout>
+      </power-toys-panel-layout>
     `;
   }
 
   static override styles = css`
+    :host {
+      display: block;
+      height: 100%;
+    }
+
     .layout {
       display: flex;
       flex-direction: column;
@@ -211,10 +211,10 @@ export class TasksModalElement extends UmbModalBaseElement {
   `;
 }
 
-export default TasksModalElement;
+export default TasksPanelElement;
 
 declare global {
   interface HTMLElementTagNameMap {
-    "power-toys-tasks-modal": TasksModalElement;
+    "power-toys-tasks-panel": TasksPanelElement;
   }
 }

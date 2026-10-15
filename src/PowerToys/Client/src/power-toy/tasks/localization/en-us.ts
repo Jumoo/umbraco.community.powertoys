@@ -26,7 +26,6 @@ const enUs: UmbLocalizationDictionary = {
     delete: "Delete",
     moveUp: "Move up",
     moveDown: "Move down",
-    close: "Close",
     failed: "The task couldn't be saved. You may not have permission to change it.",
     permissionManageGlobal: "Manage global tasks",
     permissionManageGlobalDescription: "Add, change, reorder and delete the global tasks, the ones not on a page",
