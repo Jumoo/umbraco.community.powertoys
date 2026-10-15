@@ -26,6 +26,13 @@ export const manifests: Array<UmbExtensionManifest> = [
     name: "Power Toys Current Document Context",
     api: () => import("./current-document/current-document.context.js"),
   },
+  // Gates an extension on one of the power toys' own user group permissions
+  {
+    type: "condition",
+    alias: "PowerToys.Condition.UserPermission",
+    name: "Power Toys User Permission Condition",
+    api: () => import("./user-permission.condition.js"),
+  },
   // Reports which document is open, for the "This page" lists in the Chat and Tasks sidebars
   {
     type: "workspaceContext",

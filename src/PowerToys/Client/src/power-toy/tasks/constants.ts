@@ -4,6 +4,7 @@ export const TASKS_POWER_TOY_ALIAS = "PowerToys.PowerToy.Tasks";
 // The Tasks power toy's user group permissions. Match TasksPermissions on the server.
 export const TASKS_PERMISSION_MANAGE_GLOBAL = "PowerToys.Tasks.ManageGlobal";
 export const TASKS_PERMISSION_VIEW_ALL = "PowerToys.Tasks.ViewAll";
+export const TASKS_PERMISSION_MANAGE_REVIEWS = "PowerToys.Tasks.ManageReviews";
 
 // The user group editor groups permissions by entity type, with a heading for each.
 export const TASKS_PERMISSION_ENTITY_TYPE = "powerToysTasks";

@@ -4,6 +4,10 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+- Content reviews, part of the Tasks power toy and switched on in its settings: give pages a
+  review date by hand or by a rule per content type, see what's due in the Tasks panel, mark
+  pages reviewed, and remind the last editor when a page falls due. Brought over from the
+  unreleased BackChat package (#62).
 - The BackChat and Tasks panels now dock beside the page instead of opening over it, so they
   stay open while you move around the site. A document's chat follows you as you move between
   pages.

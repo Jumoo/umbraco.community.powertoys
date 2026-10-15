@@ -4,11 +4,13 @@ import { UmbContextToken } from "@umbraco-cms/backoffice/context-api";
 import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT } from "@umbraco-cms/backoffice/current-user";
 import { UmbLocalizationController } from "@umbraco-cms/backoffice/localization-api";
-import { UmbArrayState, UmbNumberState, UmbObjectState } from "@umbraco-cms/backoffice/observable-api";
+import { UmbArrayState, UmbBooleanState, UmbNumberState, UmbObjectState } from "@umbraco-cms/backoffice/observable-api";
 import { TasksService, type TaskAssigneeResponseModel } from "../../api/index.js";
 import { UMB_POWER_TOYS_HUB_CONTEXT, type PowerToysHubContext } from "../shared/hub/hub.context.js";
 import { PowerToyEnabledController } from "../shared/power-toy-enabled.js";
+import { UMB_POWER_TOY_CONTEXT } from "../power-toy.context.js";
 import { TASKS_POWER_TOY_ALIAS } from "./constants.js";
+import type { TasksSettings } from "./settings/tasks-settings.js";
 
 /** A change to a list of tasks: a document's (by key) or the global one (null). */
 export interface TasksChange {
@@ -36,6 +38,11 @@ export class TasksContext extends UmbContextBase {
   #assigneesLoaded = false;
 
   #permissions = new UmbArrayState<string>([], (p) => p);
+
+  // Content reviews are part of Tasks, and on only when switched on in its settings
+  #reviewsSwitchedOn = false;
+  #reviewsEnabled = new UmbBooleanState(false);
+  public readonly reviewsEnabled = this.#reviewsEnabled.asObservable();
 
   constructor(host: UmbControllerHost) {
     super(host, TASKS_CONTEXT);
@@ -69,11 +76,32 @@ export class TasksContext extends UmbContextBase {
         );
       });
 
+      hub.on("reviewDue", (review: { documentName: string }) => {
+        this.getContext(UMB_NOTIFICATION_CONTEXT).then((notifications) =>
+          notifications?.peek("warning", {
+            data: { headline: this.#localize.term("powerToysTasks_reviewDueHeadline"), message: review.documentName },
+          })
+        );
+      });
+
       hub.setWanted("tasks", this.#enabled);
+    });
+
+    this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
+      if (!context) return;
+      this.observe(
+        context.observeSettings<TasksSettings>(TASKS_POWER_TOY_ALIAS),
+        (settings) => {
+          this.#reviewsSwitchedOn = settings?.reviewsEnabled === true;
+          this.#reviewsEnabled.setValue(this.#enabled && this.#reviewsSwitchedOn);
+        },
+        "_settings"
+      );
     });
 
     new PowerToyEnabledController(this, TASKS_POWER_TOY_ALIAS, (enabled) => {
       this.#enabled = enabled;
+      this.#reviewsEnabled.setValue(enabled && this.#reviewsSwitchedOn);
       this.#hub?.setWanted("tasks", enabled);
       if (enabled) {
         this.#loadAssignedCount();

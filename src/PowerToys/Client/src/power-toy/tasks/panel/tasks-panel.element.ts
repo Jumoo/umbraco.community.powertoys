@@ -1,4 +1,4 @@
-import { css, customElement, html, nothing, state } from "@umbraco-cms/backoffice/external/lit";
+import { css, customElement, html, nothing, query, state } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UMB_NOTIFICATION_CONTEXT } from "@umbraco-cms/backoffice/notification";
 import { UMB_EDIT_DOCUMENT_WORKSPACE_PATH_PATTERN } from "@umbraco-cms/backoffice/document";
@@ -7,6 +7,9 @@ import { UMB_POWER_TOYS_CURRENT_DOCUMENT_CONTEXT } from "../../shared/current-do
 import { TASKS_CONTEXT, type TasksContext } from "../tasks.context.js";
 import { TASKS_PERMISSION_MANAGE_GLOBAL } from "../constants.js";
 import "../components/task-list.element.js";
+import "../reviews/document-review.element.js";
+import "../reviews/due-reviews.element.js";
+import type { DueReviewsElement } from "../reviews/due-reviews.element.js";
 import "../../shared/panel/panel-layout.element.js";
 
 const ASSIGNED_PAGE_SIZE = 20;
@@ -30,6 +33,15 @@ export class TasksPanelElement extends UmbLitElement {
   @state()
   private _canManageGlobal = false;
 
+  @state()
+  private _reviewsEnabled = false;
+
+  @state()
+  private _dueCount = 0;
+
+  @query("power-toys-due-reviews")
+  private _dueReviews?: DueReviewsElement;
+
   #context?: TasksContext;
 
   constructor() {
@@ -39,6 +51,7 @@ export class TasksPanelElement extends UmbLitElement {
       this.#context = context;
       if (!context) return;
       this.observe(context.hasPermission(TASKS_PERMISSION_MANAGE_GLOBAL), (can) => (this._canManageGlobal = can), "_canManageGlobal");
+      this.observe(context.reviewsEnabled, (enabled) => (this._reviewsEnabled = enabled), "_reviewsEnabled");
       // A task changing anywhere can change who it's assigned to
       this.observe(context.changes, () => this.#loadAssigned(), "_changes");
     });
@@ -141,6 +154,19 @@ export class TasksPanelElement extends UmbLitElement {
             ${this.#renderAssigned()}
           </uui-box>
 
+          ${this._reviewsEnabled
+            ? html`<uui-box>
+                <div slot="headline" class="headline">
+                  <umb-icon name="icon-calendar"></umb-icon>
+                  <span>${this.localize.term("powerToysTasks_dueForReview")}</span>
+                  ${this._dueCount ? html`<uui-tag look="secondary">${this._dueCount}</uui-tag>` : nothing}
+                </div>
+                <power-toys-due-reviews
+                  @change=${(e: Event) => (this._dueCount = (e.target as DueReviewsElement).total)}
+                ></power-toys-due-reviews>
+              </uui-box>`
+            : nothing}
+
           ${this._currentDocument
             ? html`<uui-box>
                 <div slot="headline" class="headline">
@@ -148,6 +174,19 @@ export class TasksPanelElement extends UmbLitElement {
                   <span>${this.localize.term("powerToysTasks_thisPage")}</span>
                 </div>
                 <power-toys-task-list .documentKey=${this._currentDocument} editable></power-toys-task-list>
+              </uui-box>`
+            : nothing}
+
+          ${this._currentDocument && this._reviewsEnabled
+            ? html`<uui-box>
+                <div slot="headline" class="headline">
+                  <umb-icon name="icon-calendar"></umb-icon>
+                  <span>${this.localize.term("powerToysTasks_review")}</span>
+                </div>
+                <power-toys-document-review
+                  .documentKey=${this._currentDocument}
+                  @change=${() => this._dueReviews?.reload()}
+                ></power-toys-document-review>
               </uui-box>`
             : nothing}
 
