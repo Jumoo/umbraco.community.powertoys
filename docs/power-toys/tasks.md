@@ -52,7 +52,7 @@ the full interval from today, so nothing is overdue straight away.
 When a page falls due, its last editor is reminded once, with a notification if they're signed
 in. When the last editor can't be found, the group chosen in the settings is reminded instead
 (Administrators if none is chosen). The settings also say how often, in hours, to look for pages
-that have fallen due; a change to that takes effect after a restart.
+that have fallen due.
 
 ## With BackChat
 

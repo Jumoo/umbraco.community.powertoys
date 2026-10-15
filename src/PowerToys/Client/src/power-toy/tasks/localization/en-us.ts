@@ -39,7 +39,7 @@ const enUs: UmbLocalizationDictionary = {
     settingsReminderGroup: "Remind this group",
     settingsReminderGroupDescription: "Who to remind when a page's last editor can't be found. Administrators when empty.",
     settingsReminderHours: "Check every (hours)",
-    settingsReminderHoursDescription: "How often to look for pages that have fallen due. Takes effect after a restart.",
+    settingsReminderHoursDescription: "How often to look for pages that have fallen due.",
     dueForReview: "Due for review",
     noReviewsDue: "Nothing of yours is due for review.",
     overdue: "Overdue",
