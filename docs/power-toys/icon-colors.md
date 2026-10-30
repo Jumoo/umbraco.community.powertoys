@@ -18,6 +18,13 @@ tool's settings from its card on the Power Toys dashboard to:
 - **Add custom colours**: give each one a name and a colour. They're added to the end of the
   picker's colours, for every backoffice user.
 
+![The Icon Colors settings sidebar, with the Umbraco 13 colours on and a custom Brand Purple colour](../screenshots/icon-colors-settings.jpg)
+
+The colours then show up in the icon picker wherever you choose an icon, such as on a document
+type.
+
+![The icon picker showing the Umbraco 13 colours and Brand Purple, with Brand Purple selected](../screenshots/icon-colors-picker.jpg)
+
 ## Things to know
 
 - This works by changing the colour list inside the Umbraco backoffice, which isn't a public
