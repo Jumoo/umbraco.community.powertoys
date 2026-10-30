@@ -4,6 +4,11 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+### Added
+
+- Icon Colors power toy: add your own colours to the icon picker, or swap in the 19 icon colours
+  from Umbraco 13 so icons picked in v13 get their own colour back (umbraco/Umbraco-CMS#22543).
+
 ## [17.2.0] - 2026-10-15
 
 ### Added

@@ -27,6 +27,7 @@ See the [Installation](install.html) page to add the package to your site.
 - [Help Menu Editor](power-toys/help-menu-editor.html) - hides or adds links in the backoffice help menu.
 - [Environment Indicator](power-toys/environment-indicator.html) - colours the backoffice header by environment.
 - [Theme Maker](power-toys/theme-maker.html) - lists and adds custom backoffice themes.
+- [Icon Colors](power-toys/icon-colors.html) - adds your own icon colours, or brings back the Umbraco 13 ones.
 - [Logo Changer](power-toys/logo-changer.html) - customizes the backoffice logo.
 - [Backup/Restore](power-toys/backup-restore.html) - backs up and restores every power toy's settings.
 
