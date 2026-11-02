@@ -4,12 +4,16 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+## [17.3.1] - 2026-11-02
+
 ### Changed
 
 - The backoffice API client is authenticated only through Umbraco's `configureClient()`. The
   `hey-api.ts` runtime config, which copied the backoffice client's settings, is gone. Power toys
   that load as the backoffice starts now wait for the client to be configured, so their first
   requests no longer go out unauthenticated.
+- Backoffice client build dependencies updated (`@hey-api/openapi-ts` 0.99, vite), clearing the
+  open security alerts. The API client is regenerated with hey-api 0.99.
 
 ## [17.3.0] - 2026-10-30
 
