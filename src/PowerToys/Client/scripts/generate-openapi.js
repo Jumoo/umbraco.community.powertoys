@@ -38,12 +38,15 @@ fetch(swaggerUrl).then(async (response) => {
       ...defaultPlugins,
       {
         name: '@hey-api/client-fetch',
-        runtimeConfigPath: '../hey-api',
+        runtimeConfigPath: './src/hey-api',
       },
       {
         name: '@hey-api/sdk',
-        asClass: true,
-        classNameBuilder: '{{name}}Service',
+        operations: {
+          strategy: 'byTags',
+          container: 'class',
+          containerName: '{{name}}Service',
+        },
       }
     ],
   });
