@@ -13,6 +13,7 @@ import { manifests as environmentIndicatorPowerToy } from "./power-toy/environme
 import { manifests as themeMakerPowerToy } from "./power-toy/theme-maker/manifest.js";
 import { manifests as logoChangerPowerToy } from "./power-toy/logo-changer/manifest.js";
 import { manifests as iconColorsPowerToy } from "./power-toy/icon-colors/manifest.js";
+import { manifests as tabIconsPowerToy } from "./power-toy/tab-icons/manifest.js";
 import { manifests as chatPowerToy } from "./power-toy/chat/manifest.js";
 import { manifests as tasksPowerToy } from "./power-toy/tasks/manifest.js";
 import { manifests as shortcutsPowerToy } from "./power-toy/shortcuts/manifest.js";
@@ -33,6 +34,7 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...themeMakerPowerToy,
   ...logoChangerPowerToy,
   ...iconColorsPowerToy,
+  ...tabIconsPowerToy,
   ...chatPowerToy,
   ...tasksPowerToy,
   ...shortcutsPowerToy,
