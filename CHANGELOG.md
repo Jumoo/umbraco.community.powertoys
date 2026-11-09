@@ -4,6 +4,16 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+## [17.4.0] - 2026-11-09
+
+### Added
+
+- Tab Icons power toy: give document type tabs their own icon and colour, picked with Umbraco's
+  icon picker right on the tab in the document type designer. Styled tabs show their icon and
+  colour in the content editor for documents, media, blueprints and members. A tab that comes
+  from a composition is styled on the composition, so it shows on every document type using it
+  (#78).
+
 ## [17.3.1] - 2026-11-02
 
 ### Changed
