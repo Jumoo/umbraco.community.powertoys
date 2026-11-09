@@ -5,40 +5,40 @@ import { UmbBasicState, UmbBooleanState } from "@umbraco-cms/backoffice/observab
 import type { Observable } from "@umbraco-cms/backoffice/external/rxjs";
 import { UMB_POWER_TOY_CONTEXT, type UmbPowerToyContext } from "../power-toy.context.js";
 import {
-  DEFAULT_TAB_COLORS_SETTINGS,
+  DEFAULT_TAB_ICONS_SETTINGS,
   resolveTabColor,
   withDefaults,
-  type TabColor,
-  type TabColorsSettings,
+  type TabIcon,
+  type TabIconsSettings,
   type TabStyle,
-} from "./tab-colors-settings.js";
-import { installTabColorsPatch, setTabStyles } from "./tab-colors.patch.js";
+} from "./tab-icons-settings.js";
+import { installTabIconsPatch, setTabStyles } from "./tab-icons.patch.js";
 
-export const TAB_COLORS_ALIAS = "PowerToys.PowerToy.TabColors";
+export const TAB_ICONS_ALIAS = "PowerToys.PowerToy.TabIcons";
 
 // Global, like Icon Colors - tabs are drawn in every content editor, so the colours have to be
 // ready before one opens, not only while the settings modal is.
-export class TabColorsContext extends UmbContextBase {
+export class TabIconsContext extends UmbContextBase {
   #powerToyContext?: UmbPowerToyContext;
 
   #enabled = new UmbBooleanState(false);
   #locked = new UmbBooleanState(false);
 
-  #settings = new UmbBasicState<TabColorsSettings>(DEFAULT_TAB_COLORS_SETTINGS);
+  #settings = new UmbBasicState<TabIconsSettings>(DEFAULT_TAB_ICONS_SETTINGS);
   #settings$ = this.#settings.asObservable();
 
   constructor(host: UmbControllerHost) {
-    super(host, TAB_COLORS_CONTEXT);
+    super(host, TAB_ICONS_CONTEXT);
 
-    installTabColorsPatch();
+    installTabIconsPatch();
 
     this.consumeContext(UMB_POWER_TOY_CONTEXT, (context) => {
       this.#powerToyContext = context;
       if (!context) return;
       this.#loadSettings();
-      context.isSettingsLocked(TAB_COLORS_ALIAS).then((locked) => this.#locked.setValue(locked));
+      context.isSettingsLocked(TAB_ICONS_ALIAS).then((locked) => this.#locked.setValue(locked));
 
-      this.observe(context.observeEnabled(TAB_COLORS_ALIAS), (enabled) => {
+      this.observe(context.observeEnabled(TAB_ICONS_ALIAS), (enabled) => {
         this.#enabled.setValue(enabled);
         this.#applyState();
       });
@@ -46,7 +46,7 @@ export class TabColorsContext extends UmbContextBase {
   }
 
   async #loadSettings() {
-    const settings = await this.#powerToyContext?.getSettings<TabColorsSettings>(TAB_COLORS_ALIAS);
+    const settings = await this.#powerToyContext?.getSettings<TabIconsSettings>(TAB_ICONS_ALIAS);
     this.#settings.setValue(withDefaults(settings));
     this.#applyState();
   }
@@ -62,7 +62,7 @@ export class TabColorsContext extends UmbContextBase {
     setTabStyles(styles, enabled);
   }
 
-  observeSettings(): Observable<TabColorsSettings> {
+  observeSettings(): Observable<TabIconsSettings> {
     return this.#settings$;
   }
 
@@ -77,8 +77,8 @@ export class TabColorsContext extends UmbContextBase {
   }
 
   /** Persists the given settings and immediately repaints any open editors. */
-  async save(settings: TabColorsSettings): Promise<void> {
-    await this.#powerToyContext?.saveSettings<TabColorsSettings>(TAB_COLORS_ALIAS, settings);
+  async save(settings: TabIconsSettings): Promise<void> {
+    await this.#powerToyContext?.saveSettings<TabIconsSettings>(TAB_ICONS_ALIAS, settings);
     this.#settings.setValue(settings);
     this.#applyState();
   }
@@ -87,7 +87,7 @@ export class TabColorsContext extends UmbContextBase {
    * Sets (or, with null, removes) the style for individual tab containers and saves straight
    * away - used by the designer's picker, which has no Save button of its own.
    */
-  async update(changes: Record<string, TabColor | null>): Promise<void> {
+  async update(changes: Record<string, TabIcon | null>): Promise<void> {
     const tabs = { ...this.#settings.getValue().tabs };
     Object.entries(changes).forEach(([id, tab]) => {
       if (tab) tabs[id] = tab;
@@ -97,6 +97,6 @@ export class TabColorsContext extends UmbContextBase {
   }
 }
 
-export const TAB_COLORS_CONTEXT = new UmbContextToken<TabColorsContext>("TabColorsContext");
+export const TAB_ICONS_CONTEXT = new UmbContextToken<TabIconsContext>("TabIconsContext");
 
-export default TabColorsContext;
+export default TabIconsContext;

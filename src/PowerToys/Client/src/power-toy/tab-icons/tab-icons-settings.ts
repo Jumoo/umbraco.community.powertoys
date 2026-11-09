@@ -1,6 +1,6 @@
 import { extractUmbColorVariable } from "@umbraco-cms/backoffice/resources";
 
-export interface TabColor {
+export interface TabIcon {
   /**
    * An icon colour alias from Umbraco's icon picker ("blue", or an Icon Colors custom colour's
    * `var(...)` alias), or - from before the picker was used - any CSS colour.
@@ -14,14 +14,14 @@ export interface TabColor {
   tabName: string;
 }
 
-export interface TabColorsSettings {
+export interface TabIconsSettings {
   /**
    * Keyed by the tab's container id (a GUID). Container ids are unique across every content
    * type, survive renaming the tab, and are carried between environments by uSync - so the
    * id alone is enough to find the tab wherever it's drawn, including on doc types that get
    * it through a composition.
    */
-  tabs: Record<string, TabColor>;
+  tabs: Record<string, TabIcon>;
 }
 
 /** What a tab looks like once its settings are resolved - colour as real CSS, ready to apply. */
@@ -30,13 +30,13 @@ export interface TabStyle {
   icon?: string;
 }
 
-export const DEFAULT_TAB_COLORS_SETTINGS: TabColorsSettings = {
+export const DEFAULT_TAB_ICONS_SETTINGS: TabIconsSettings = {
   tabs: {},
 };
 
-export function withDefaults(settings: Partial<TabColorsSettings> | null | undefined): TabColorsSettings {
+export function withDefaults(settings: Partial<TabIconsSettings> | null | undefined): TabIconsSettings {
   return {
-    ...DEFAULT_TAB_COLORS_SETTINGS,
+    ...DEFAULT_TAB_ICONS_SETTINGS,
     ...settings,
     tabs: settings?.tabs ?? {},
   };

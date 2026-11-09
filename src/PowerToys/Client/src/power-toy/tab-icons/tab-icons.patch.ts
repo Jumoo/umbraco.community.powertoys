@@ -1,7 +1,7 @@
 import { html, nothing } from "@umbraco-cms/backoffice/external/lit";
 import { encodeFolderName } from "@umbraco-cms/backoffice/router";
 import type { UmbPropertyTypeContainerMergedModel } from "@umbraco-cms/backoffice/content-type";
-import type { TabStyle } from "./tab-colors-settings.js";
+import type { TabStyle } from "./tab-icons-settings.js";
 import "./tab-style-button.element.js";
 
 // There's no extension point for tabs in v17, and the elements that draw them aren't exported,
@@ -16,8 +16,8 @@ import "./tab-style-button.element.js";
 //   data-umb-tab-id (ownerId ?? ids[0]); the merged models are in its _tabs too.
 const CONTENT_EDITOR_TAG = "umb-content-workspace-view-edit";
 const DESIGN_EDITOR_TAG = "umb-content-type-design-editor";
-const PATCHED = Symbol.for("PowerToys.TabColors.Patched");
-const PATCHED_INNER = Symbol.for("PowerToys.TabColors.PatchedInner");
+const PATCHED = Symbol.for("PowerToys.TabIcons.Patched");
+const PATCHED_INNER = Symbol.for("PowerToys.TabIcons.PatchedInner");
 const STYLED = "data-powertoys-tab-color";
 const ICON_LABEL = "data-powertoys-tab-icon";
 
@@ -72,7 +72,7 @@ export function styleFor(model: UmbPropertyTypeContainerMergedModel, map: Map<st
   return model.ids.map((id) => map.get(id)).find(Boolean);
 }
 
-export function installTabColorsPatch() {
+export function installTabIconsPatch() {
   patch(CONTENT_EDITOR_TAG);
   patch(DESIGN_EDITOR_TAG);
   patchDesignerTabInner();
@@ -88,7 +88,7 @@ function patchDesignerTabInner() {
     if (proto[PATCHED_INNER]) return;
     const original = proto.renderTabInner as RenderTabInner | undefined;
     if (typeof original !== "function") {
-      console.warn(`Power Toys: ${DESIGN_EDITOR_TAG} has no renderTabInner(), so Tab Colors can't add its picker.`);
+      console.warn(`Power Toys: ${DESIGN_EDITOR_TAG} has no renderTabInner(), so Tab Icons can't add its picker.`);
       return;
     }
     proto.renderTabInner = function (
@@ -123,7 +123,7 @@ function patch(tag: string) {
     if (proto[PATCHED]) return;
     const original = proto.updated as ((changed: unknown) => void) | undefined;
     if (typeof original !== "function") {
-      console.warn(`Power Toys: ${tag} has no updated() to hook, so Tab Colors can't apply.`);
+      console.warn(`Power Toys: ${tag} has no updated() to hook, so Tab Icons can't apply.`);
       return;
     }
     proto.updated = function (this: PatchedElement, changed: unknown) {

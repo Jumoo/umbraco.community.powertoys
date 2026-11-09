@@ -2,31 +2,31 @@ import { LitElement, css, html, customElement, property, state } from "@umbraco-
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { ManifestPowerToy } from "../power-toy.extension.js";
 import type { UmbPowerToyElement } from "../power-toy-element.interface.js";
-import { TAB_COLORS_CONTEXT, type TabColorsContext } from "./tab-colors.context.js";
+import { TAB_ICONS_CONTEXT, type TabIconsContext } from "./tab-icons.context.js";
 import {
-  DEFAULT_TAB_COLORS_SETTINGS,
+  DEFAULT_TAB_ICONS_SETTINGS,
   resolveTabColor,
   withDefaults,
-  type TabColorsSettings,
-} from "./tab-colors-settings.js";
+  type TabIconsSettings,
+} from "./tab-icons-settings.js";
 
 // Tabs are styled in the document type designer itself (see tab-style-button.element.ts), so
 // this is just the list of everything styled so far - the one place to clear a style left
 // behind by a tab that was deleted, or added and then discarded. Removals stay local until the
 // shared modal's Save button calls save().
-@customElement("power-toys-tab-colors-modal")
-export class TabColorsModalElement extends UmbElementMixin(LitElement) implements UmbPowerToyElement {
+@customElement("power-toys-tab-icons-modal")
+export class TabIconsModalElement extends UmbElementMixin(LitElement) implements UmbPowerToyElement {
   @property({ attribute: false })
   manifest?: ManifestPowerToy;
 
   @state()
-  private _settings: TabColorsSettings = DEFAULT_TAB_COLORS_SETTINGS;
+  private _settings: TabIconsSettings = DEFAULT_TAB_ICONS_SETTINGS;
 
-  #context?: TabColorsContext;
+  #context?: TabIconsContext;
 
   constructor() {
     super();
-    this.consumeContext(TAB_COLORS_CONTEXT, (context) => {
+    this.consumeContext(TAB_ICONS_CONTEXT, (context) => {
       this.#context = context;
       if (!context) return;
       this.observe(context.observeSettings(), (settings) => {
@@ -130,10 +130,10 @@ export class TabColorsModalElement extends UmbElementMixin(LitElement) implement
   ];
 }
 
-export default TabColorsModalElement;
+export default TabIconsModalElement;
 
 declare global {
   interface HTMLElementTagNameMap {
-    "power-toys-tab-colors-modal": TabColorsModalElement;
+    "power-toys-tab-icons-modal": TabIconsModalElement;
   }
 }

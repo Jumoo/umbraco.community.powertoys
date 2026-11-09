@@ -4,8 +4,8 @@ import { UMB_WORKSPACE_CONTEXT } from "@umbraco-cms/backoffice/workspace";
 import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
 import { UMB_ICON_PICKER_MODAL } from "@umbraco-cms/backoffice/icon";
 import type { UmbContentTypeModel, UmbPropertyTypeContainerMergedModel } from "@umbraco-cms/backoffice/content-type";
-import { TAB_COLORS_CONTEXT, type TabColorsContext } from "./tab-colors.context.js";
-import { resolveTabColor, type TabColor, type TabColorsSettings } from "./tab-colors-settings.js";
+import { TAB_ICONS_CONTEXT, type TabIconsContext } from "./tab-icons.context.js";
+import { resolveTabColor, type TabIcon, type TabIconsSettings } from "./tab-icons-settings.js";
 
 // The bit of the content type workspace context this needs. Its own token
 // (UMB_CONTENT_TYPE_WORKSPACE_CONTEXT) isn't exported, so this takes the generic workspace
@@ -21,7 +21,7 @@ function hasStructure(context: unknown): context is StructureWorkspace {
   return typeof (context as StructureWorkspace | undefined)?.structure?.getContentTypes === "function";
 }
 
-// A button on the active tab in the document type designer (see tab-colors.patch.ts) that opens
+// A button on the active tab in the document type designer (see tab-icons.patch.ts) that opens
 // Umbraco's own icon picker - the same one the doc type's icon uses - to pick the tab's icon and
 // colour together. The pick saves straight away: it's a power toy setting, not part of the doc
 // type, so the designer's own Save button isn't involved.
@@ -31,12 +31,12 @@ export class TabStyleButtonElement extends UmbLitElement {
   tab?: UmbPropertyTypeContainerMergedModel;
 
   @state()
-  private _settings?: TabColorsSettings;
+  private _settings?: TabIconsSettings;
 
   @state()
   private _locked = false;
 
-  #context?: TabColorsContext;
+  #context?: TabIconsContext;
   #workspace?: StructureWorkspace;
   #modalManager?: typeof UMB_MODAL_MANAGER_CONTEXT.TYPE;
 
@@ -50,7 +50,7 @@ export class TabStyleButtonElement extends UmbLitElement {
       event.stopPropagation();
     });
 
-    this.consumeContext(TAB_COLORS_CONTEXT, (context) => {
+    this.consumeContext(TAB_ICONS_CONTEXT, (context) => {
       this.#context = context;
       if (!context) return;
       this.observe(context.observeSettings(), (settings) => (this._settings = settings), "_settings");
@@ -65,7 +65,7 @@ export class TabStyleButtonElement extends UmbLitElement {
   }
 
   // Same precedence as the editors: the doc type's own tab, then its compositions.
-  get #current(): TabColor | undefined {
+  get #current(): TabIcon | undefined {
     const tabs = this._settings?.tabs ?? {};
     const tab = this.tab;
     if (!tab) return undefined;
@@ -113,7 +113,7 @@ export class TabStyleButtonElement extends UmbLitElement {
       await this.#context?.update(changes);
       return;
     }
-    const changes: Record<string, TabColor> = {};
+    const changes: Record<string, TabIcon> = {};
     this.#targets.forEach((id) => {
       const owner = this.#ownerOf(id);
       changes[id] = {
