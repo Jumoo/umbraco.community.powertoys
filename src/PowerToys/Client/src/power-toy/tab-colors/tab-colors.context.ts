@@ -6,11 +6,13 @@ import type { Observable } from "@umbraco-cms/backoffice/external/rxjs";
 import { UMB_POWER_TOY_CONTEXT, type UmbPowerToyContext } from "../power-toy.context.js";
 import {
   DEFAULT_TAB_COLORS_SETTINGS,
+  resolveTabColor,
   withDefaults,
   type TabColor,
   type TabColorsSettings,
+  type TabStyle,
 } from "./tab-colors-settings.js";
-import { installTabColorsPatch, setTabColors } from "./tab-colors.patch.js";
+import { installTabColorsPatch, setTabStyles } from "./tab-colors.patch.js";
 
 export const TAB_COLORS_ALIAS = "PowerToys.PowerToy.TabColors";
 
@@ -52,14 +54,19 @@ export class TabColorsContext extends UmbContextBase {
   #applyState() {
     const enabled = this.#enabled.getValue();
     const tabs = enabled ? this.#settings.getValue().tabs : {};
-    setTabColors(new Map(Object.entries(tabs).map(([id, tab]) => [id, tab.color])), enabled);
+    const styles = new Map<string, TabStyle>();
+    Object.entries(tabs).forEach(([id, tab]) => {
+      const style = { color: resolveTabColor(tab.color), icon: tab.icon || undefined };
+      if (style.color || style.icon) styles.set(id, style);
+    });
+    setTabStyles(styles, enabled);
   }
 
   observeSettings(): Observable<TabColorsSettings> {
     return this.#settings$;
   }
 
-  /** Whether the power toy is switched on - the designer's colour picker only shows while it is. */
+  /** Whether the power toy is switched on - the designer's picker only shows while it is. */
   observeEnabled(): Observable<boolean> {
     return this.#enabled.asObservable();
   }
@@ -77,7 +84,7 @@ export class TabColorsContext extends UmbContextBase {
   }
 
   /**
-   * Sets (or, with null, removes) the colour for individual tab containers and saves straight
+   * Sets (or, with null, removes) the style for individual tab containers and saves straight
    * away - used by the designer's picker, which has no Save button of its own.
    */
   async update(changes: Record<string, TabColor | null>): Promise<void> {

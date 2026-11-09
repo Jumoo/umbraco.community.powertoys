@@ -10,7 +10,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     weight: 70,
     meta: {
       label: "Tab Colors",
-      description: "Give the tabs on a document type their own colour.",
+      description: "Give document type tabs their own icon and colour, picked right on the tab in the designer.",
       icon: "icon-tab",
       modal: {
         element: () => import("./tab-colors-modal.element.js"),
