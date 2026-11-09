@@ -1,4 +1,4 @@
-import { html, nothing } from "@umbraco-cms/backoffice/external/lit";
+import { html } from "@umbraco-cms/backoffice/external/lit";
 import { encodeFolderName } from "@umbraco-cms/backoffice/router";
 import type { UmbPropertyTypeContainerMergedModel } from "@umbraco-cms/backoffice/content-type";
 import type { TabStyle } from "./tab-icons-settings.js";
@@ -80,8 +80,10 @@ export function installTabIconsPatch() {
 
 // The designer's renderTabInner() is a public method (unlike everything in the content editor),
 // so the icon and picker go in through that, around whatever Umbraco renders for the tab. Lit
-// composes the templates, no DOM poking needed. The picker is only on the active tab, and
-// neither is added in sort mode, where the tab shows a drag handle and sort order box instead.
+// composes the templates, no DOM poking needed. Both go before the tab name: on the active tab
+// the icon is itself the button that opens the picker (or a small "add" button while there's no
+// icon); other tabs just show their icon. Neither is added in sort mode, where the tab shows a
+// drag handle and sort order box instead.
 function patchDesignerTabInner() {
   customElements.whenDefined(DESIGN_EDITOR_TAG).then((ctor) => {
     const proto = ctor.prototype as Record<string | symbol, unknown>;
@@ -100,16 +102,11 @@ function patchDesignerTabInner() {
       const inner = original.call(this, tab, tabActive, ownedTab);
       if (!enabled || this._sortModeActive) return inner;
       const icon = styleFor(tab)?.icon;
-      const picker = tabActive;
-      if (!icon && !picker) return inner;
-      // An owned active tab renders .tab-inner (the name box), which pulls itself right with a
-      // negative margin - push the button back out by the same amount so it doesn't overlap.
+      if (!icon && !tabActive) return inner;
       return html`<div style="display: flex; align-items: center; gap: var(--uui-size-space-2)">
-        ${icon ? html`<umb-icon name=${icon}></umb-icon>` : nothing}${inner}${picker
-          ? html`<power-toys-tab-style-button
-              .tab=${tab}
-              style=${ownedTab ? "margin-left: var(--uui-size-space-3)" : ""}></power-toys-tab-style-button>`
-          : nothing}
+        ${tabActive
+          ? html`<power-toys-tab-style-button .tab=${tab}></power-toys-tab-style-button>`
+          : html`<umb-icon name=${icon}></umb-icon>`}${inner}
       </div>`;
     };
     proto[PATCHED_INNER] = true;

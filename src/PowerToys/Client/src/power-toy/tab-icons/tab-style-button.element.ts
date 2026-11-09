@@ -5,7 +5,7 @@ import { UMB_MODAL_MANAGER_CONTEXT } from "@umbraco-cms/backoffice/modal";
 import { UMB_ICON_PICKER_MODAL } from "@umbraco-cms/backoffice/icon";
 import type { UmbContentTypeModel, UmbPropertyTypeContainerMergedModel } from "@umbraco-cms/backoffice/content-type";
 import { TAB_ICONS_CONTEXT, type TabIconsContext } from "./tab-icons.context.js";
-import { resolveTabColor, type TabIcon, type TabIconsSettings } from "./tab-icons-settings.js";
+import type { TabIcon, TabIconsSettings } from "./tab-icons-settings.js";
 
 // The bit of the content type workspace context this needs. Its own token
 // (UMB_CONTENT_TYPE_WORKSPACE_CONTEXT) isn't exported, so this takes the generic workspace
@@ -128,22 +128,23 @@ export class TabStyleButtonElement extends UmbLitElement {
   }
 
   render() {
-    const current = this.#current;
-    const color = resolveTabColor(current?.color);
+    const icon = this.#current?.icon;
     const compositions = this.#compositionNames;
     const title = this._locked
       ? "Tab icon and colour (locked in appsettings.json)"
       : compositions.length
         ? `Tab icon and colour - set on ${compositions.join(", ")}, so it shows on every document type using it`
         : "Tab icon and colour";
+    // With an icon set, the icon itself is the button. Without one, a small "add" button stands
+    // in its place. A tab with only a colour still gets the add button, to add an icon.
     return html`
       <button
+        class=${icon ? "icon" : "add"}
         title=${title}
         aria-label=${title}
         ?disabled=${this._locked}
-        style=${color ? `--uui-icon-color: ${color}` : ""}
         @click=${this.#openPicker}>
-        <umb-icon name=${current?.icon ? "icon-edit" : "icon-palette"}></umb-icon>
+        <umb-icon name=${icon ?? "icon-palette"}></umb-icon>
       </button>
     `;
   }
@@ -159,25 +160,43 @@ export class TabStyleButtonElement extends UmbLitElement {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      /* The tab's own icon: looks like the icons on the other tabs (it takes the tab's colour),
+         with a hover outline to show it can be clicked. */
+      button.icon {
+        border: 1px solid transparent;
+        border-radius: var(--uui-border-radius);
+        background: none;
+        color: inherit;
+        padding: 2px;
+        margin: -3px;
+      }
+
+      button.icon:hover:not([disabled]) {
+        border-color: var(--uui-color-border-emphasis);
+      }
+
+      button.add {
         width: 22px;
         height: 22px;
-        padding: 0;
         border: 1px solid var(--uui-color-border);
         border-radius: var(--uui-border-radius);
         background: var(--uui-color-surface);
         color: var(--uui-color-text-alt);
         font-size: 12px;
-        cursor: pointer;
       }
 
-      button:hover:not([disabled]) {
+      button.add:hover:not([disabled]) {
         border-color: var(--uui-color-border-emphasis);
         color: var(--uui-color-interactive-emphasis);
       }
 
       button[disabled] {
         cursor: default;
-        opacity: 0.6;
       }
     `,
   ];
