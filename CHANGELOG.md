@@ -9,6 +9,9 @@ Notable changes to `Umbraco.Community.PowerToys`.
 - Right-Click Actions power toy: right-click a tree item, the header above a tree, or a card or
   table row in a collection to open its actions menu, as trees did before Umbraco 14.
   Shift + right-click keeps the browser's own menu.
+- Toast Durations power toy: set how long success, information, warning and error toasts stay
+  on screen, from 2 to 30 seconds, until dismissed, or not shown at all. Only toasts on
+  Umbraco's 6-second default change.
 
 ## [17.4.0] - 2026-11-09
 

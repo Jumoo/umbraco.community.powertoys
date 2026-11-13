@@ -22,6 +22,7 @@ See the [Installation](install.html) page to add the package to your site.
 - [Tasks](power-toys/tasks.html) - to-do lists for each page and for the whole site, from the backoffice header.
 - [Keyboard Shortcuts](power-toys/keyboard-shortcuts.html) - press ? to see the keyboard shortcuts that work on the screen you're on.
 - [Right-Click Actions](power-toys/right-click.html) - right-click a tree item or collection item to open its actions menu.
+- [Toast Durations](power-toys/toast-durations.html) - sets how long success, warning and error notifications stay on screen.
 - [Navbar Clock](power-toys/navbar-clock.html) - shows the current time in the backoffice header.
 - [Dashboard Manager](power-toys/dashboard-manager.html) - lists installed dashboards, lets you hide/reorder them.
 - [Login Customizer](power-toys/login-customizer.html) - customizes the backoffice login screen.
