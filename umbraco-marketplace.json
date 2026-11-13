@@ -5,7 +5,7 @@
       "ImageUrl": "https://github.com/jumoo.png"
     },
     "Category": "Developer Tools",
-    "Description": "A dashboard in the Umbraco Settings section that collects small backoffice admin tools (\"power toys\") in one place, each with its own on/off switch. Ships with tools including a Navbar Clock, Login Customizer, Logo Changer, Help Menu Editor, Environment Indicator, Theme Maker, and Dashboard Manager, and other packages can register their own power toys onto the same dashboard without touching this package's code.",
+    "Description": "A dashboard in the Umbraco Settings section that collects small backoffice admin tools (\"power toys\") in one place, each with its own on/off switch. Ships with tools including BackChat, Tasks, Keyboard Shortcuts, Right-Click Actions, Toast Durations, a Navbar Clock, Dashboard Manager, Login Customizer, Help Menu Editor, Environment Indicator, Theme Maker, Icon Colors, Tab Icons and Logo Changer, and other packages can register their own power toys onto the same dashboard without touching this package's code.",
     "DocumentationUrl": "https://github.com/jumoo/umbraco.community.powertoys/wiki",
     "LicenseTypes": [ "Free" ],
     "IssueTrackerUrl": "https://github.com/jumoo/umbraco.community.powertoys/issues",
