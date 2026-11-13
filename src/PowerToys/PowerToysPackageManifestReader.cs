@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+
+using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Manifest;
 using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Infrastructure.Manifest;
@@ -12,10 +15,12 @@ namespace PowerToys
     public class PowerToysPackageManifestReader : IPackageManifestReader
     {
         private readonly IPowerToyService _powerToyService;
+        private readonly IOptions<GlobalSettings> _globalSettings;
 
-        public PowerToysPackageManifestReader(IPowerToyService powerToyService)
+        public PowerToysPackageManifestReader(IPowerToyService powerToyService, IOptions<GlobalSettings> globalSettings)
         {
             _powerToyService = powerToyService;
+            _globalSettings = globalSettings;
         }
 
         public Task<IEnumerable<PackageManifest>> ReadPackageManifestsAsync()
@@ -45,8 +50,8 @@ namespace PowerToys
             return Task.FromResult<IEnumerable<PackageManifest>>(manifests);
         }
 
-        // Public (anonymous-reachable) extensions for the login screen - custom CSS and greeting
-        // overrides. Only returned when the power toy is enabled, and only the pieces that are
+        // Public (anonymous-reachable) extensions for the login screen - custom CSS, the message,
+        // and greeting overrides. Only returned when the power toy is enabled, and only the pieces that are
         // actually configured - see LoginCustomizerSettings.GetSettings.
         private PackageManifest? BuildLoginCustomizerPublicManifest()
         {
@@ -55,21 +60,18 @@ namespace PowerToys
 
             var extensions = new List<object>();
 
-            if (!string.IsNullOrWhiteSpace(settings.CustomCss))
+            if (!string.IsNullOrWhiteSpace(settings.CustomCss) || !string.IsNullOrWhiteSpace(settings.EffectiveMessage))
             {
                 extensions.Add(new
                 {
                     type = "appEntryPoint",
-                    alias = "PowerToys.LoginCustomizer.Style",
-                    name = "Login Customizer Style",
-                    js = "/umbraco/powertoys/login-customizer/style.js",
+                    alias = "PowerToys.LoginCustomizer.Login",
+                    name = "Login Customizer Login Screen",
+                    js = "/umbraco/powertoys/login-customizer/login.js",
                 });
             }
 
             var auth = new Dictionary<string, string>();
-            if (!string.IsNullOrWhiteSpace(settings.Instruction))
-                auth["instruction"] = settings.Instruction;
-
             for (var day = 0; day < settings.Greetings.Length; day++)
             {
                 var greeting = settings.Greetings[day];
@@ -79,17 +81,26 @@ namespace PowerToys
 
             if (auth.Count > 0)
             {
-                extensions.Add(new
+                // The login screen uses the site's default UI language, so the greetings are
+                // registered for that as well as en-US, Umbraco's default.
+                var cultures = new[] { "en-US", _globalSettings.Value.DefaultUILanguage }
+                    .Where(culture => !string.IsNullOrWhiteSpace(culture))
+                    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var culture in cultures)
                 {
-                    type = "localization",
-                    alias = "PowerToys.LoginCustomizer.Localization.EnUS",
-                    name = "Login Customizer Localization",
-                    meta = new
+                    extensions.Add(new
                     {
-                        culture = "en-US",
-                        localizations = new { auth },
-                    },
-                });
+                        type = "localization",
+                        alias = $"PowerToys.LoginCustomizer.Localization.{culture}",
+                        name = $"Login Customizer Localization ({culture})",
+                        meta = new
+                        {
+                            culture,
+                            localizations = new { auth },
+                        },
+                    });
+                }
             }
 
             if (extensions.Count == 0) return null;

@@ -6,12 +6,22 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ### Added
 
+- Login Customizer: a message under the login screen's greeting, for example who to contact for
+  an account. Plain text, with email and web addresses turned into links. It replaces the
+  Instruction setting, which Umbraco 17's login screen doesn't show, and takes over any saved
+  instruction.
 - Right-Click Actions power toy: right-click a tree item, the header above a tree, or a card or
   table row in a collection to open its actions menu, as trees did before Umbraco 14.
   Shift + right-click keeps the browser's own menu.
 - Toast Durations power toy: set how long success, information, warning and error toasts stay
   on screen, from 2 to 30 seconds, until dismissed, or not shown at all. Only toasts on
   Umbraco's 6-second default change.
+
+### Changed
+
+- Login Customizer: greetings are also set for the site's `DefaultUILanguage`, so they show on
+  sites whose backoffice language isn't English.
+- Login Customizer: custom CSS is only added to the login screen, not to the backoffice as well.
 
 ## [17.4.0] - 2026-11-09
 

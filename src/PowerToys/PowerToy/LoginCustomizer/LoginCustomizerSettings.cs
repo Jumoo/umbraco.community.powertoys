@@ -21,7 +21,23 @@ namespace PowerToys.PowerToy.LoginCustomizer
 
         public string? CustomCss { get; set; }
 
+        /// <summary>
+        ///     Plain text shown under the login screen's greeting, e.g. who to contact for help.
+        /// </summary>
+        public string? Message { get; set; }
+
+        /// <summary>
+        ///     The message's old name. It was saved as Umbraco's <c>auth_instruction</c> text,
+        ///     which the v17 login screen no longer shows, so it's read as the message instead.
+        /// </summary>
         public string? Instruction { get; set; }
+
+        /// <summary>
+        ///     The message to show: <see cref="Message" />, or the old <see cref="Instruction" />
+        ///     when the settings haven't been saved since the rename.
+        /// </summary>
+        public string? EffectiveMessage =>
+            string.IsNullOrWhiteSpace(Message) ? Instruction : Message;
 
         /// <summary>
         ///     Login screen greeting overrides, index 0 = Sunday ... 6 = Saturday.
