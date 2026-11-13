@@ -17,6 +17,7 @@ import { manifests as tabIconsPowerToy } from "./power-toy/tab-icons/manifest.js
 import { manifests as chatPowerToy } from "./power-toy/chat/manifest.js";
 import { manifests as tasksPowerToy } from "./power-toy/tasks/manifest.js";
 import { manifests as shortcutsPowerToy } from "./power-toy/shortcuts/manifest.js";
+import { manifests as rightClickPowerToy } from "./power-toy/right-click/manifest.js";
 
 // Job of the bundle is to collate all the manifests from different parts of the extension and load other manifests.
 // Registered in code via PowerToysPackageManifestReader.cs rather than a Client/public/umbraco-package.json.
@@ -38,4 +39,5 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...chatPowerToy,
   ...tasksPowerToy,
   ...shortcutsPowerToy,
+  ...rightClickPowerToy,
 ];

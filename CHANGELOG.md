@@ -4,6 +4,12 @@ Notable changes to `Umbraco.Community.PowerToys`.
 
 ## Unreleased
 
+### Added
+
+- Right-Click Actions power toy: right-click a tree item, the header above a tree, or a card or
+  table row in a collection to open its actions menu, as trees did before Umbraco 14.
+  Shift + right-click keeps the browser's own menu.
+
 ## [17.4.0] - 2026-11-09
 
 ### Added
