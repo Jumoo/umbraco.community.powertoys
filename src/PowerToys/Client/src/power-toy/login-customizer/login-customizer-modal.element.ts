@@ -137,19 +137,29 @@ export class LoginCustomizerModalElement extends UmbElementMixin(LitElement) imp
             </umb-property-layout>
           `,
         )}
-        <umb-property-layout label="Instruction" orientation="horizontal">
-          <uui-input
-            slot="editor"
-            .value=${this._settings.instruction}
-            @input=${(e: UUIInputEvent) => this.#onChange("instruction", String(e.target.value ?? ""))}>
-          </uui-input>
-        </umb-property-layout>
+      </uui-box>
+
+      <uui-box>
+        <div slot="headline">Message</div>
+        <p class="note">
+          Shown under the greeting, for example who to contact for help. Plain text: line breaks are kept,
+          and email addresses and web addresses become links.
+        </p>
+        <uui-textarea
+          rows="3"
+          label="Message"
+          placeholder="Need access? Email support@example.com"
+          .value=${this._settings.message}
+          @input=${(e: UUIInputEvent) => this.#onChange("message", String(e.target.value ?? ""))}>
+        </uui-textarea>
       </uui-box>
 
       <uui-box>
         <div slot="headline">Custom CSS</div>
         <uui-textarea
+          id="custom-css"
           rows="6"
+          label="Custom CSS"
           .value=${this._settings.customCss}
           @input=${(e: UUIInputEvent) => this.#onChange("customCss", String(e.target.value ?? ""))}>
         </uui-textarea>
@@ -162,7 +172,7 @@ export class LoginCustomizerModalElement extends UmbElementMixin(LitElement) imp
         </p>
       </uui-box>
 
-      <p class="note">Greeting and Custom CSS changes appear on the next login screen load (cached briefly - up to 30 days in production).</p>
+      <p class="note">Greeting, Message and Custom CSS changes appear on the next login screen load (cached briefly - up to 30 days in production).</p>
     `;
   }
 
@@ -179,7 +189,7 @@ export class LoginCustomizerModalElement extends UmbElementMixin(LitElement) imp
         width: 100%;
       }
 
-      uui-textarea {
+      #custom-css {
         font-family: monospace;
       }
 
