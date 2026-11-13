@@ -2,7 +2,7 @@
 
 Notable changes to `Umbraco.Community.PowerToys`.
 
-## Unreleased
+## [17.5.0] - 2026-11-13
 
 ### Added
 
