@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: nuget
     directory: /
     schedule:
-      interval: weekly
+      interval: "monthly"
     ignore:
       - dependency-name: "Umbraco.*"
     groups:
@@ -15,7 +15,7 @@ updates:
   - package-ecosystem: npm
     directory: /src/PowerToys/Client
     schedule:
-      interval: weekly
+      interval: "monthly"
     ignore:
       - dependency-name: "@umbraco-cms/*"
       # TypeScript is pinned to v5 until hey-api supports v7.
@@ -32,7 +32,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: "monthly"
     groups:
       minor-and-patch:
         update-types:

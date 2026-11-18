@@ -5,6 +5,10 @@ on:
   push:
     tags:
       - "v*"
+  # Rehearsal: /release runs this on the branch before tagging. It builds and packs
+  # exactly as a release does, but every step that checks the tag or publishes needs
+  # `github.event_name == 'push'`, so a rehearsal can never ship anything.
+  workflow_dispatch:
 
 env:
   out_folder: out/
@@ -26,6 +30,12 @@ jobs:
 
       - name: Validate tag
         run: |
+          if [ "$GITHUB_EVENT_NAME" != "push" ]; then
+            version="0.0.0-rehearsal.$GITHUB_RUN_NUMBER"
+            echo "version=$version" >> "$GITHUB_ENV"
+            echo "Rehearsal on $GITHUB_REF_NAME, packing as $version"
+            exit 0
+          fi
           tag="${GITHUB_REF_NAME}"
           version="${tag#v}"
 
@@ -81,12 +91,14 @@ jobs:
           path: ${{ env.out_folder }}*.nupkg
 
       - name: nuget login
+        if: ${{ github.event_name == 'push' }}
         id: nuget_login
         uses: NuGet/login@v1
         with:
           user: ${{ vars.NUGET_USER || 'Jumoo' }}
 
       - name: push to nuget
+        if: ${{ github.event_name == 'push' }}
         env:
           NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
         run: >
