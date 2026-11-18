@@ -6,6 +6,8 @@ updates:
       interval: "monthly"
     ignore:
       - dependency-name: "Umbraco.*"
+      - dependency-name: "Clean"  # starter-kit majors track Umbraco majors (7=v17, 8=v18, 9=v19)
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         update-types:
